@@ -1,0 +1,109 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 20px;
+}
+
+h1, h2 {
+  color: darkred;
+}
+
+.formRow {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.formRow label {
+  width: 120px;
+  font-weight: bold;
+}
+
+.formRow input,
+.formRow select {
+  flex: 1;
+  padding: 5px;
+}
+
+.formActions {
+  margin: 15px 0;
+}
+
+.formActions button {
+  margin-right: 10px;
+  padding: 5px 10px;
+}
+
+/* ======= DANH SÁCH GIÁO ÁN ======= */
+#lessonList {
+  margin-top: 20px;
+}
+
+.lessonGroup {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.lessonGroup h3 {
+  margin: 0 0 5px 0;
+}
+
+/* Bảng đẹp + chống xuống dòng */
+.lessonTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;     /* ép cố định để ellipsis hoạt động */
+}
+
+.lessonTable th,
+.lessonTable td {
+  border: 1px solid #aaa;
+  padding: 5px;
+  text-align: left;
+
+  white-space: nowrap;      /* Không xuống dòng */
+  overflow: hidden;
+  text-overflow: ellipsis;  /* Thêm dấu ... */
+}
+
+/* Thu nhỏ cột STT và cột Số tiết */
+.lessonTable th:nth-child(1),
+.lessonTable td:nth-child(1) {
+  width: 40px;       /* STT */
+  text-align: center;
+}
+
+.lessonTable th:nth-child(3),
+.lessonTable td:nth-child(3) {
+  width: 60px;       /* Số tiết */
+  text-align: center;
+}
+
+.lessonTable th:nth-child(4),
+.lessonTable td:nth-child(4) {
+  width: 100px;       /* Ngày */
+  text-align: center;
+}
+
+.lessonTable th:nth-child(8),
+.lessonTable td:nth-child(8) {
+  width: 40px;       /* Xóa */
+  text-align: center;
+}
+/* Nút Xóa màu đỏ đẹp */
+.lessonTable td button {
+  padding: 3px 6px;
+  font-size: 12px;
+
+  background: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lessonTable td button:hover {
+  background: #c9302c;
+}

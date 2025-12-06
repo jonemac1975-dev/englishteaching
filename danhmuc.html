@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Cập nhật danh mục - English Teaching</title>
+<link rel="stylesheet" href="css/danhmuc.css">
+</head>
+<body>
+
+<h1>CẬP NHẬT DANH MỤC</h1>
+
+<nav class="tabs">
+  <button class="tabBtn active" data-tab="monhoc">Môn Học</button>
+  <button class="tabBtn" data-tab="hocham">Học Hàm</button>
+  <button class="tabBtn" data-tab="chuyenmon">Chuyên Môn</button>
+  <button class="tabBtn" data-tab="chucvu">Chức Vụ</button>
+  <button class="tabBtn" data-tab="phongban">Phòng Ban</button>
+  <button class="tabBtn" data-tab="giaovien">Giáo Viên</button>
+</nav>
+
+<main>
+  <!-- MÔN HỌC -->
+  <section id="monhoc" class="tabContent active">
+    <input type="text" id="inputMonHoc" placeholder="Tên môn học">
+    <div class="formActions">
+      <button id="addMonHoc">Thêm</button>
+      <button id="saveMonHoc">Lưu</button>
+      <button id="delMonHoc">Xóa</button>
+    </div>
+    <table id="tableMonHoc"><thead><tr><th>STT</th><th>Tên môn học</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <!-- HỌC HÀM -->
+  <section id="hocham" class="tabContent">
+    <input type="text" id="inputHocHam" placeholder="Tên học hàm">
+    <div class="formActions">
+      <button id="addHocHam">Thêm</button>
+      <button id="saveHocHam">Lưu</button>
+      <button id="delHocHam">Xóa</button>
+    </div>
+    <table id="tableHocHam"><thead><tr><th>STT</th><th>Tên học hàm</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <!-- CHUYÊN MÔN -->
+  <section id="chuyenmon" class="tabContent">
+    <input type="text" id="inputChuyenMon" placeholder="Tên chuyên môn">
+    <div class="formActions">
+      <button id="addChuyenMon">Thêm</button>
+      <button id="saveChuyenMon">Lưu</button>
+      <button id="delChuyenMon">Xóa</button>
+    </div>
+    <table id="tableChuyenMon"><thead><tr><th>STT</th><th>Tên chuyên môn</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <!-- CHỨC VỤ -->
+  <section id="chucvu" class="tabContent">
+    <input type="text" id="inputChucVu" placeholder="Tên chức vụ">
+    <div class="formActions">
+      <button id="addChucVu">Thêm</button>
+      <button id="saveChucVu">Lưu</button>
+      <button id="delChucVu">Xóa</button>
+    </div>
+    <table id="tableChucVu"><thead><tr><th>STT</th><th>Tên chức vụ</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <!-- PHÒNG BAN -->
+  <section id="phongban" class="tabContent">
+    <input type="text" id="inputPhongBan" placeholder="Tên phòng ban">
+    <div class="formActions">
+      <button id="addPhongBan">Thêm</button>
+      <button id="savePhongBan">Lưu</button>
+      <button id="delPhongBan">Xóa</button>
+    </div>
+    <table id="tablePhongBan"><thead><tr><th>STT</th><th>Tên phòng ban</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <!-- GIÁO VIÊN -->
+  <section id="giaovien" class="tabContent">
+    <div class="formRow">
+      <label>Ảnh:</label>
+<img id="imgPreview" style="width:100px;height:100px;object-fit:cover;margin-left:10px;">
+<button id="delImg">Xóa ảnh</button>
+      <input type="file" id="imgGV">
+      
+      
+    </div>
+    <div class="formRow">
+      <label>Tên giáo viên:</label>
+      <input type="text" id="gvName">
+    </div>
+    <div class="formRow">
+      <label>Giới tính:</label>
+      <select id="gvGT"><option>Nam</option><option>Nữ</option></select>
+    </div>
+    <div class="formRow">
+      <label>Năm sinh:</label>
+      <input type="text" id="gvNS" placeholder="dd/mm/yyyy">
+    </div>
+    <div class="formRow">
+      <label>Số điện thoại:</label>
+      <input type="text" id="gvSDT">
+    </div>
+    <div class="formRow">
+      <label>Học hàm:</label>
+      <select id="gvHH"></select>
+    </div>
+    <div class="formRow">
+      <label>Chuyên môn:</label>
+      <select id="gvCM"></select>
+    </div>
+    <div class="formRow">
+      <label>Chức vụ:</label>
+      <select id="gvCV"></select>
+    </div>
+    <div class="formRow">
+      <label>Phòng ban:</label>
+      <select id="gvPB"></select>
+    </div>
+    <div class="formRow">
+      <label>Gmail:</label>
+      <input type="text" id="gvMail">
+    </div>
+    <div class="formRow">
+      <label>Facebook:</label>
+      <input type="text" id="gvFB">
+    </div>
+    <div class="formRow">
+      <label>Zalo:</label>
+      <input type="text" id="gvZalo">
+    </div>
+    <div class="formRow">
+      <label>ID:</label>
+      <input type="text" id="gvID" readonly>
+    </div>
+
+    <div class="formActions">
+      <button id="addGV">Thêm</button>
+      <button id="saveGV">Lưu</button>
+      <button id="delGV">Xóa</button>
+    </div>
+
+    <table id="tableGV">
+      <thead>
+        <tr>
+          <th>STT</th><th>Tên</th><th>GT</th><th>Năm sinh</th><th>SDT</th>
+          <th>Học hàm</th><th>Chuyên môn</th><th>Chức vụ</th><th>Phòng ban</th>
+          <th>Gmail</th><th>FB</th><th>Zalo</th><th>ID</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  <button id="goMain">Trang chính</button>
+  <button id="exportJSON">Xuất JSON</button>
+  <button id="importJSON">Nạp JSON</button>
+  <button id="clearFirebase">Xóa Firebase</button>
+  <button id="changePassBtn">Đổi Pass</button>
+</footer>
+
+<script type="module" src="js/firebase.js"></script>
+<script type="module" src="js/danhmuc.js"></script>
+</body>
+</html>

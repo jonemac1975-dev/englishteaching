@@ -1,0 +1,141 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #005f99;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+header button {
+  padding: 5px 10px;
+  font-size: 1rem;
+  background: #0099ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.gvCard {
+  border: 1px solid #ccc;
+  margin: 10px 20px;
+  padding: 10px;
+}
+
+.gvCard h2 {
+  color: #cc0000; /* Tên GV đỏ đậm */
+  margin: 0 0 10px 0;
+}
+
+.subjectTitle {
+  color: #800080; /* Môn học màu tím đậm */
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  margin-bottom: 10px;
+}
+
+.lessonTable {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed; /* cố định layout cột */
+  white-space: nowrap;  /* không xuống dòng */
+}
+
+.lessonTable th, .lessonTable td {
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  text-align: left;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lessonTable th {
+  background-color: #cce6ff; /* tiêu đề xanh nhạt */
+}
+
+/* Điều chỉnh độ rộng cột */
+.lessonTable td:nth-child(1),
+.lessonTable th:nth-child(1) { width: 35px;center }   /* STT */
+.lessonTable td:nth-child(2),
+.lessonTable th:nth-child(2) { width: 35px; }   /* STT */
+.lessonTable td:nth-child(4),
+.lessonTable th:nth-child(4) { width: 150px; }   /* Số tiết */
+.lessonTable td:nth-child(5),
+.lessonTable th:nth-child(5) { width: 50px; }   /* Số tiết */
+.lessonTable td:nth-child(6), /* Ngày */
+.lessonTable th:nth-child(6) {
+  width: 90px; /* Ngày giảm 30% */
+}
+
+/* Button Dạy */
+.lessonTable td button {
+  padding: 3px 6px;
+  background-color: #0073e6;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* Hover highlight hàng */
+.lessonTable tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+/* Tooltip khi text overflow */
+.lessonTable td {
+  position: relative;
+}
+.lessonTable td:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: #333;
+  color: #fff;
+  padding: 2px 5px;
+  font-size: 12px;
+  white-space: normal;
+  z-index: 100;
+}
+
+/* Scroll bar đẹp */
+.tableWrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.tableWrapper::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+.tableWrapper::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+/* Responsive Mobile */
+@media (max-width: 768px) {
+  .gvCard {
+    margin: 5px 10px;
+    padding: 5px;
+  }
+  .lessonTable th, .lessonTable td {
+    font-size: 12px;
+    padding: 3px 5px;
+  }
+}

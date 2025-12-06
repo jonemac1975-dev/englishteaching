@@ -1,0 +1,159 @@
+/* js/danhmuc.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #fffaf5;
+    color: #333;
+}
+
+h1 {
+    color: #8B0000;
+    margin-bottom: 15px;
+}
+
+.tabs {
+    margin-bottom: 10px;
+}
+
+.tabs button {
+    padding: 8px 12px;
+    margin-right: 2px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #eee;
+    border-radius: 4px;
+}
+
+.tabs button.active {
+    background: #8B0000;
+    color: #fff;
+}
+
+.tabContent {
+    display: none;
+    margin-top: 10px;
+}
+
+.tabContent.active {
+    display: block;
+}
+
+.formRow {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.formRow label {
+    width: 120px;
+    font-weight: bold;
+}
+
+.formRow input, 
+.formRow select {
+    flex: 1;
+    padding: 4px 6px;
+    min-width: 120px;
+    box-sizing: border-box;
+}
+
+.formActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.formActions button {
+    padding: 4px 8px;
+    cursor: pointer;
+    background: #8B0000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    text-align: left;
+    white-space: nowrap; /* tránh xuống dòng */
+}
+
+table tr.selected {
+    background: #f2f2f2;
+}
+
+footer {
+    margin-top: 20px;
+}
+
+footer button {
+    padding: 6px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    background: #8B0000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+#imgPreview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-left: 10px;
+    border: 1px solid #ccc;
+}
+
+/* ------------------ MOBILE RESPONSIVE ------------------ */
+@media (max-width: 768px) {
+    body {
+        margin: 10px;
+    }
+
+    .formRow {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .formRow label {
+        width: 100%;
+        margin-bottom: 2px;
+    }
+
+    .formRow input,
+    .formRow select {
+        width: 100%;
+    }
+
+    .formActions {
+        justify-content: flex-start;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    #imgPreview {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+}
+
+/* Table container to scroll horizontally if too wide */
+.tabContent table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}

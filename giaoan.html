@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Cập nhật giáo án</title>
+<link rel="stylesheet" href="css/giaoan.css">
+</head>
+<body>
+
+<h1>CẬP NHẬT GIÁO ÁN</h1>
+
+<div class="formRow">
+  <label>ID giáo viên:</label>
+  <input type="text" id="gvIDInput" placeholder="Nhập ID giáo viên">
+  <span id="gvNameDisplay"></span>
+</div>
+
+<div class="formRow">
+  <label>Môn học:</label>
+  <select id="subjectSelect"></select>
+</div>
+
+<div class="formRow">
+  <label>Tên bài giảng:</label>
+  <input type="text" id="lessonName">
+</div>
+
+<div class="formRow">
+  <label>Số tiết:</label>
+  <input type="text" id="lessonHours">
+</div>
+
+<div class="formRow">
+  <label>Ngày bắt đầu:</label>
+  <input type="date" id="lessonDate">
+</div>
+
+<div class="formRow">
+  <label>Google Drive (Word/DPF)</label>
+  <input type="text" id="lessonFile" placeholder="Nhập link Google Drive (Word/DPF)">
+</div>
+
+<div class="formRow">
+  <label>Youtube/Mp3-4:</label>
+  <input type="text" id="lessonYT"placeholder="Nhập link youtube/Mp3-4">
+  <div id="ytPreview"></div>
+</div>
+
+<div class="formRow">
+  <label>Google Meet:</label>
+  <input type="text" id="lessonGMeet">
+</div>
+
+<div class="formActions">
+  <button id="addLesson">Thêm</button>
+  <button id="saveLesson">Lưu</button>
+  <button id="goBaigiang">Xem bài giảng</button>
+</div>
+
+<h2>Danh sách giáo án theo môn học</h2>
+<div id="lessonList"></div>
+
+<script type="module" src="js/giaoan.js"></script>
+</body>
+</html>
