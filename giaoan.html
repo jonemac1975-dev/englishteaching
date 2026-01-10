@@ -36,15 +36,33 @@
 </div>
 
 <div class="formRow">
-  <label>Google Drive (Word/DPF)</label>
-  <input type="text" id="lessonFile" placeholder="Nhập link Google Drive (Word/DPF)">
+  <label>Nội dung bài giảng</label>
+
+  <div class="editorToolbar">
+  <!-- Nút upload từ PC -->
+  <button type="button" id="btnChooseFile">📁 Choose File</button>
+  <input type="file" id="fileInput" accept="image/*" hidden>
+
+  <button type="button" onclick="addAudio()">🔊 Audio</button>
+  <button type="button" onclick="addYT()">🎬 YouTube</button>
+  <button type="button" onclick="openPreview()">👁 Preview</button>
 </div>
 
-<div class="formRow">
-  <label>Youtube/Mp3-4:</label>
-  <input type="text" id="lessonYT"placeholder="Nhập link youtube/Mp3-4">
-  <div id="ytPreview"></div>
+
+
+  <textarea
+    id="lessonContent"
+    rows="10"
+    placeholder="Nhập nội dung bài giảng tại đây..."
+  ></textarea>
+
+  <!-- PREVIEW -->
+  <div id="lessonPreview" style="display:none; margin-top:10px;
+       padding:10px; border:1px solid #ccc; background:#fafafa">
+  </div>
 </div>
+
+
 
 <div class="formRow">
   <label>Google Meet:</label>
@@ -54,11 +72,75 @@
 <div class="formActions">
   <button id="addLesson">Thêm</button>
   <button id="saveLesson">Lưu</button>
-  <button id="goBaigiang">Xem bài giảng</button>
+ 
+  <button id="goBaitap">Bài Tập</button>
 </div>
 
 <h2>Danh sách giáo án theo môn học</h2>
 <div id="lessonList"></div>
+<script>
+function insertAtCursor(text) {
+  const ta = document.getElementById("lessonContent");
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+
+  ta.value =
+    ta.value.substring(0, start) +
+    text +
+    ta.value.substring(end);
+
+  ta.selectionStart = ta.selectionEnd = start + text.length;
+  ta.focus();
+}
+
+function addImage() {
+  const url = prompt("Dán link ảnh:");
+  if (!url) return;
+  insertAtCursor(`<img src="${url}" style="max-width:100%;"><br>`);
+}
+
+function addAudio() {
+  const url = prompt("Dán link MP3 hoặc YouTube:");
+  if (!url) return;
+
+  if (url.includes("youtube")) {
+    let id = url.includes("watch?v=")
+      ? url.split("watch?v=")[1].split("&")[0]
+      : url.split("youtu.be/")[1];
+
+    insertAtCursor(
+      `<iframe height="80"
+        src="https://www.youtube.com/embed/${id}">
+      </iframe><br>`
+    );
+  } else {
+    insertAtCursor(`<audio controls src="${url}"></audio><br>`);
+  }
+}
+
+function addYT() {
+  const url = prompt("Dán link YouTube:");
+  if (!url) return;
+
+  let id = url.includes("watch?v=")
+    ? url.split("watch?v=")[1].split("&")[0]
+    : url.split("youtu.be/")[1];
+
+  insertAtCursor(
+    `<iframe width="100%" height="315"
+      src="https://www.youtube.com/embed/${id}"
+      allowfullscreen>
+    </iframe><br>`
+  );
+}
+</script>
+
+<script>
+  // Nút "Bài Tập" dẫn về trang baitap.html
+  document.getElementById("goBaitap").addEventListener("click", () => {
+    window.location.href = "baitap.html";
+  });
+</script>
 
 <script type="module" src="js/giaoan.js"></script>
 </body>

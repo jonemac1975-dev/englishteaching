@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cập nhật bài tập</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/baitap.css" />
+</head>
+
+<body>
+<div class="container">
+
+  <h2>📘 CẬP NHẬT BÀI TẬP</h2>
+
+  <!-- ===== FORM ===== -->
+  <div class="form-box">
+
+    <div class="row">
+      <label>Ngày:</label>
+      <input type="date" id="btDate">
+    </div>
+
+    <div class="row">
+      <label>Môn học:</label>
+      <select id="btSubject">
+        <option value="">-- chọn môn --</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label>Bài giảng:</label>
+      <input type="text" id="btLesson" placeholder="Tên bài giảng">
+    </div>
+
+    <div class="row">
+      <label>Tiêu đề bài tập:</label>
+      <input type="text" id="btTitle" placeholder="VD: Exercise 1 – Listening">
+    </div>
+
+    <!-- ===== TOOLBAR ===== -->
+    <div class="editor-toolbar">
+<button type="button" id="btnChooseFile">📁 Choose file</button>
+<input type="file" id="fileInput" hidden>
+
+      <button type="button" id="btnAudio">🔊 Audio</button>
+      <button type="button" id="btnYoutube">▶ Youtube</button>
+      <button type="button" id="btnPreview">👁 Preview</button>
+
+      <!-- hidden input -->
+      <input type="file" id="imageInput" accept="image/*" hidden>
+      <input type="file" id="audioInput" accept="audio/*" hidden>
+    </div>
+
+    <!-- ===== HTML CONTENT ===== -->
+    <div class="row">
+      <label>Nội dung bài tập (HTML):</label>
+      <textarea id="btContent" placeholder="Nhập nội dung bài tập ở đây..."></textarea>
+    </div>
+
+    <!-- ===== ACTION ===== -->
+    <div class="actions">
+      <button id="btnAdd">Thêm</button>
+      <button id="btnSave">Lưu</button>
+      <button id="btnDeleteSubject" class="danger">Xóa môn</button>
+     <button id="btnGiaoAn">Giáo án</button>
+    </div>
+
+  </div>
+
+  <!-- ===== LIST ===== -->
+  
+  <h3>Danh sách bài tập</h3>
+  <div id="btList"></div>
+</div>
+
+  </div>
+
+</div>
+<script>
+  // Khi nhấn nút Giáo án => về trang giaoan.html
+  document.getElementById("btnGiaoAn").addEventListener("click", () => {
+    window.location.href = "giaoan.html";
+  });
+</script>
+<script type="module" src="js/baitap.js"></script>
+</body>
+</html>
