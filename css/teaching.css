@@ -1,35 +1,62 @@
-/* RESET */
+/* ===== RESET ===== */
 * { margin:0; padding:0; box-sizing:border-box; }
 
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    color: #333;
-    transition: background 0.3s, color 0.3s;
+html, body { 
+    height: 100%; 
+    font-family: Arial, sans-serif; 
+    background: #f5f5f5; 
+    color: #333; 
+    transition: background 0.3s, color 0.3s; 
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .teaching-header {
     display: flex;
-    align-items: center;
+    flex-direction: row; /* logo trái, text phải */
+    align-items: flex-start;
     gap: 15px;
     padding: 10px 20px;
     background-color: #004080;
     color: #fff;
-    flex-wrap: wrap;
-    justify-content: center; /* căn giữa container */
 }
 
-.teaching-logo {
-    height: 90px;
-    width: auto;
+.header-logos {
+    display: flex;
+    flex-direction: column; /* logo trường trên, cô dưới */
+    gap: 8px;
 }
 
+/* Logo trường cũng dạng avatar nhỏ */
+.school-logo {
+    height: 40px;
+    width: 40px;           /* fix vuông để tròn hoàn hảo */
+    border-radius: 50%;    /* thành hình tròn */
+    border: 2px solid #fff;
+    object-fit: cover;     /* giữ tỉ lệ hình không bị méo */
+}
+
+
+.teacher-logos {
+    display: flex;
+    gap: 8px;
+}
+
+.teacher-logos .teaching-logo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    object-fit: cover;     /* quan trọng */
+    flex-shrink: 0;        /* không bị co */
+}
 .header-text {
-    text-align: center; /* text căn giữa */
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;      /* canh giữa ngang */
+    text-align: center;       /* canh giữa chữ */
 }
-
 .header-text h1 {
     font-size: 1.8em;
     margin-bottom: 5px;
@@ -37,10 +64,9 @@ body {
 
 .header-text h3 {
     color: yellow;
-    animation: glow 2s infinite alternate;
     font-weight: bold;
+    animation: glow 2s infinite alternate;
 }
-
 
 @keyframes glow {
     0% { text-shadow: 0 0 2px #fff; }
@@ -55,48 +81,107 @@ body {
     margin-top:5px;
 }
 
-/* MAIN LAYOUT */
+/* ===== MAIN 2 CỘT ===== */
 main#screen {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 10px;
     gap: 10px;
-    transition: 0.25s ease;
+    padding: 10px;
+    height: calc(100vh - 150px); /* trừ header + footer */
+    box-sizing: border-box;
 }
 
-/* Base display for iframe/video */
-iframe, video {
-    border: 2px solid #ccc;
+/* CỘT TRÁI */
+.left-panel {
+    flex: 0 0 20%;
+    max-height: 100%;
+    overflow-y: auto;
+    background: #fff;
+    padding: 10px;
     border-radius: 8px;
-    width: 48%;
-    height: 380px;
-    transition: 0.25s ease;
-    background: #000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* FULL SLIDE MODE */
-main.fullSlide {
-    display: block;
+.left-panel h3 {
+    margin-bottom: 6px;
+    font-size: 1.1em;
+    color: #004080;
 }
 
-main.fullSlide #slideFrame {
+.collapsible-list {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+.collapsible-list li {
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.25s;
+}
+
+.collapsible-list li:hover {
+    background-color: #f0f0f0;
+}
+
+/* CỘT PHẢI */
+.right-panel {
+    flex: 1;
+    position: relative;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* BG SLIDER */
+.bg-slider {
     width: 100%;
-    height: calc(100vh - 160px);
+    height: 100%;
+    position: absolute;
+    top:0; left:0;
 }
 
-/* DUAL MODE (PC) */
-main.dual {
-    display: flex;
-    flex-direction: row;
+.bg-slide {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
 }
 
-main.dual iframe {
-    width: 48%;
+.bg-slide.active {
+    opacity: 1;
 }
 
-/* FOOTER */
+/* IFRAME PREVIEW */
+#previewFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+/* LIST TREE */
+#lessonTree, #homeworkTree {
+    list-style: none;
+    padding-left: 10px;
+}
+
+#lessonTree li, #homeworkTree li { margin: 4px 0; }
+
+#lessonTree li span.toggle, #homeworkTree li span.toggle {
+    user-select: none;
+    font-weight: bold;
+}
+
+#lessonTree li ul, #homeworkTree li ul {
+    list-style: none;
+    padding-left: 18px;
+}
+
+/* ===== FOOTER ===== */
 footer {
     display: flex;
     justify-content: space-between;
@@ -109,7 +194,7 @@ footer {
 }
 
 footer button {
-    background-color: #004080; /* xanh trùng logo */
+    background-color: #004080;
     color: #fff;
     border: none;
     padding: 8px 12px;
@@ -119,101 +204,32 @@ footer button {
     transition: 0.25s;
 }
 
-footer button:hover {
-    background-color: #0066cc; /* xanh hover */
-}
+footer button:hover { background-color: #0066cc; }
 
 footer a#gmeetLink {
-    color: #00f;
-    text-decoration: underline;
+  color: #9fd3ff;
+  text-decoration: underline;
 }
 
-footer .footer-right span {
-    font-weight: bold;
+footer a#gmeetLink:hover {
+  color: #cfe8ff;
+  text-shadow: 0 0 4px rgba(159,211,255,0.6);
 }
 
-.login-icon {
-    width: 28px;
-    height: auto;
-    cursor: pointer;
-    margin-left: 10px;
-    vertical-align: middle;
-}
+
+footer .footer-right span { font-weight: bold; }
 
 /* LIGHT MODE */
-body.light {
-    background:#fff;
-    color:#000;
-}
+body.light { background:#fff; color:#000; }
+body.light header { color:#000; }
+body.light footer { background:#eee; color:#000; }
+body.light footer button { background-color: #0066cc; color:#fff; }
 
-body.light header {
-    color:#000;
-}
-
-body.light footer {
-    background:#eee;
-    color:#000;
-}
-
-body.light footer button {
-    background-color: #0066cc;
-    color:#fff;
-}
-
-/* ------- MOBILE OPTIMIZATION ------- */
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
-
-    /* HEADER mobile */
-    .teaching-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .header-text {
-        text-align: left;
-    }
-
-    .teaching-logo {
-        height: 60px;
-    }
-
-    /* MAIN chuyển thành dọc */
-    main#screen {
-        flex-direction: column !important;
-        padding: 8px;
-    }
-
-    /* Slide / YT / Video luôn full-width */
-    iframe, video {
-        width: 100% !important;
-        height: 230px !important;
-    }
-
-    /* DUAL MODE trên mobile xếp dọc */
-    main.dual {
-        flex-direction: column !important;
-    }
-
-    main.dual #slideFrame,
-    main.dual #ytFrame {
-        width: 100% !important;
-        height: 230px !important;
-    }
-
-    /* FULL SLIDE trên mobile vẫn full screen */
-    main.fullSlide #slideFrame {
-        height: calc(100vh - 150px) !important;
-    }
-
-    /* Footer xếp gọn lại */
-    footer {
-        flex-direction: column;
-        gap: 5px;
-        text-align: center;
-    }
-
-    .footer-right {
-        margin-top: 5px;
-    }
+    .teaching-header { flex-direction: column; align-items: flex-start; }
+    .teacher-logos { flex-wrap: wrap; gap: 5px; }
+    .header-text { text-align: left; margin-top: 10px; }
+    main#screen { flex-direction: column; height: auto; padding: 8px; }
+    iframe, video { width: 100%; height: 230px; }
 }

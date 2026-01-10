@@ -1,0 +1,164 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+}
+
+body {
+  margin: 0;
+  background: #f3f4f6;
+  color: #111;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ===== FORM ===== */
+.form-box {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  margin-bottom: 24px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+input,
+select,
+textarea {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+/* ===== TOOLBAR ===== */
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 14px;
+}
+
+.editor-toolbar button {
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.editor-toolbar button:hover {
+  background: #1d4ed8;
+}
+
+/* ===== ACTIONS ===== */
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.actions button:first-child {
+  background: #16a34a;
+  color: #fff;
+}
+
+.actions button:nth-child(2) {
+  background: #2563eb;
+  color: #fff;
+}
+
+.actions .danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+#btnGiaoAn {
+  background-color: #3b82f6;      /* Xanh dương */
+  color: #fff;                     /* Chữ trắng */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  margin-left: 6px;               /* Cách các nút khác */
+}
+
+#btnGiaoAn:hover {
+  background-color: #2563eb;      /* Xanh đậm khi hover */
+  transform: scale(1.05);         /* Nhấn nhẹ animation */
+}
+
+#btnGiaoAn:active {
+  transform: scale(0.98);         /* Hiệu ứng nhấn */
+}
+
+/* ===== LIST ===== */
+.list-box {
+  background: #fff;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.bt-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bt-table th,
+.bt-table td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.bt-table th {
+  background: #f1f5f9;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .editor-toolbar {
+    flex-direction: column;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
