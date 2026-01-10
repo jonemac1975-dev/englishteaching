@@ -1,153 +1,257 @@
-// teaching.js (full, đã fix import sha256)
-import "https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/build/sha256.min.js";
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+// teaching.js
+import { db } from "./firebase.js"; // chỉ import db 1 lần
+import { ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-// --- Firebase ---
-const firebaseConfig = {
-  apiKey: "AIzaSyAFYzJMv3HYJwo7SbpD_kAQuqx_zMoMBj8",
-  authDomain: "english-teaching-e4242.firebaseapp.com",
-  databaseURL: "https://english-teaching-e4242-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "english-teaching-e4242",
-  storageBucket: "english-teaching-e4242.appspot.com",
-  messagingSenderId: "196358725024",
-  appId: "1:196358725024:web:c82e9fc5f4e809cccc98c5"
-};
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const db = getDatabase(app);
+// ====== ELEMENT ======
+const lessonTree = document.getElementById("lessonTree");
+const homeworkTree = document.getElementById("homeworkTree");
+const previewFrame = document.getElementById("previewFrame");
+const bgSlider = document.getElementById("bgSlider");
 
-// --- DOM elements ---
-const slide = document.getElementById("slideFrame");
-const yt    = document.getElementById("ytFrame");
-const vid   = document.getElementById("videoPlayer");
-const main  = document.getElementById("screen");
+// ====== HELPER: tạo toggle ======
+function createToggle(text) {
+    const li = document.createElement("li");
+    li.classList.add("tree-item");
+    const span = document.createElement("span");
+    span.classList.add("toggle");
+    span.textContent = "▶ " + text;
+    span.style.cursor = "pointer";
+    li.appendChild(span);
+    const ul = document.createElement("ul");
+    ul.style.display = "none";
+    li.appendChild(ul);
 
-const btnSlide = document.getElementById("btnSlide");
-const btnYT    = document.getElementById("btnYT");
-const btnDual  = document.getElementById("btnDual");
-const btnVideo = document.getElementById("btnVideo");
-const gmeetLink = document.getElementById("gmeetLink");
-const goBaigiangBtn = document.getElementById("goBaigiangBtn");
-const goAdminBtn = document.getElementById("goAdminBtn");
-
-// --- Login button ---
-const loginBtn = document.createElement("button");
-loginBtn.innerText="🔒";;
-loginBtn.style.position="fixed";
-loginBtn.style.top="5px";
-loginBtn.style.left="10px";
-loginBtn.style.width="35px";
-loginBtn.style.height="35px";
-loginBtn.style.borderRadius="50%";
-document.body.appendChild(loginBtn);
-
-let isLoggedIn=false;
-
-// --- Đồng hồ ---
-const clockEl = document.getElementById("clock");
-setInterval(()=>{ if(clockEl) clockEl.innerText = new Date().toLocaleTimeString(); },1000);
-
-// --- Lấy dữ liệu bài giảng ---
-const d = JSON.parse(localStorage.getItem("teachingData")||"{}");
-const fileLink = d.file?.trim() || '';
-const ytLink   = d.yt?.trim() || '';
-const videoLink= d.video || '';
-
-// --- Chuẩn hóa ---
-function normalizeDriveLink(url){
-    if(!url) return '';
-    if(url.includes('drive.google.com')){
-        if(url.includes('/file/d/')) return url.replace(/\/view(\?usp=.*)?$/,'/preview');
-        if(url.includes('uc?export=download')){
-            const m = url.match(/id=([a-zA-Z0-9_-]+)/);
-            if(m) return `https://drive.google.com/file/d/${m[1]}/preview`;
+    // Toggle open/close
+    span.addEventListener("click", e => {
+        e.stopPropagation();
+        if (ul.style.display === "none") {
+            ul.style.display = "block";
+            span.textContent = "▼ " + text;
+        } else {
+            ul.style.display = "none";
+            span.textContent = "▶ " + text;
         }
-    }
-    return url;
-}
-function normalizeYTLink(url){
-    if(!url) return '';
-    if(url.includes('youtube.com/watch')){
-        const vid = new URL(url).searchParams.get('v');
-        return vid ? `https://www.youtube.com/embed/${vid}` : '';
-    } else if(url.includes('youtu.be/')){
-        const vid = url.split('/').pop();
-        return `https://www.youtube.com/embed/${vid}`;
-    } else return url;
+    });
+
+    return li;
 }
 
-// --- Gán iframe/video ---
-if(fileLink) slide.src = normalizeDriveLink(fileLink);
-if(ytLink) yt.src = normalizeYTLink(ytLink);
-if(videoLink) vid.src = videoLink;
-if(d.gmeet) gmeetLink.href = d.gmeet;
+// ====== LOAD DATA ======
+let monhocMap = {};
+let giaovienMap = {};
 
-// --- Chế độ hiển thị ---
-function modeSlide(){ 
-    main.className="fullSlide"; 
-    slide.style.display="block"; yt.style.display="none"; vid.style.display="none"; 
-    slide.style.width='100%'; slide.style.height='calc(100vh - 150px)';
-}
-function modeYT(){ 
-    main.className=""; 
-    yt.style.display="block"; slide.style.display="none"; vid.style.display="none";
-}
-function modeDual(){ 
-    main.className="dual"; 
-    slide.style.display="block"; yt.style.display="block"; vid.style.display="none";
-    if(window.innerWidth<=768){
-        slide.style.width='100%'; slide.style.height='250px';
-        yt.style.width='100%'; yt.style.height='250px';
-    } else {
-        slide.style.width='48%'; slide.style.height='400px';
-        yt.style.width='48%'; yt.style.height='400px';
-    }
-}
-function modeVideo(){ 
-    main.className=""; vid.style.display="block"; slide.style.display="none"; yt.style.display="none";
-}
-
-// --- Gán nút (không hỏi pass nữa) ---
-btnSlide.onclick = modeSlide;
-btnYT.onclick    = modeYT;
-btnDual.onclick  = modeDual;
-goBaigiangBtn.onclick = ()=>{ if(isLoggedIn) window.location.href='baigiang.html'; else alert("Login trước!"); };
-goAdminBtn.onclick    = ()=>{ if(isLoggedIn) window.location.href='danhmuc.html'; else alert("Login trước!"); };
-
-// --- Dark/Light mode ---
-const themeToggle = document.createElement("button");
-themeToggle.innerText="🌙/☀";
-themeToggle.style.position="fixed";
-themeToggle.style.top="5px"; 
-themeToggle.style.right="10px";
-themeToggle.style.padding="3px 8px"; // chữ nhật nhỏ gọn
-themeToggle.style.borderRadius="0"; // bỏ tròn
-themeToggle.style.border="1px solid #000";
-themeToggle.style.background="#fff";
-themeToggle.style.cursor="pointer";
-themeToggle.onclick=()=> document.body.classList.toggle("light");
-document.body.appendChild(themeToggle);
-
-// --- Resize dual mode ---
-window.addEventListener('resize', ()=>{
-    if(main.classList.contains('dual')) modeDual();
+// Load môn học
+onValue(ref(db,"monhoc"), snap=>{
+    const data = snap.val() || {};
+    for(const k in data) monhocMap[k] = data[k].name;
 });
 
-// --- Login button ---
-loginBtn.onclick = async ()=>{
-    if(isLoggedIn){ alert("Đã login"); return; }
-    const pass = prompt("Nhập mật khẩu giáo viên:");
-    if(!pass) return;
+// Load giáo viên
+onValue(ref(db,"giaovien"), snap=>{
+    const data = snap.val() || {};
+    for(const k in data) giaovienMap[k] = data[k].name;
+});
 
-    // Lấy pass hash từ Firebase
-    const passRef = ref(db,'config/pass');
-    onValue(passRef, snapshot=>{
-        const hashFromFire = snapshot.val() || '';
-        if(window.sha256(pass)===hashFromFire){
-            alert("Login thành công!");
-            isLoggedIn=true;
-        } else {
-            alert("Sai mật khẩu!");
+// ====== LOAD BÀI GIẢNG ======
+onValue(ref(db,"baigiang"), snap=>{
+    const data = snap.val() || {};
+    lessonTree.innerHTML = "";
+
+    for(const subjKey in data){
+        const lessons = data[subjKey];
+        const gvMap = {};
+
+        // Nhóm theo gvID
+        for(const k in lessons){
+            const l = lessons[k];
+            if(!gvMap[l.gvID]) gvMap[l.gvID] = [];
+            gvMap[l.gvID].push({subjKey, lesson: l});
         }
-    }, { onlyOnce: true });
-};
+
+        for(const gvID in gvMap){
+            const liGV = createToggle(giaovienMap[gvID] || gvID);
+            lessonTree.appendChild(liGV);
+
+            gvMap[gvID].forEach(item=>{
+                const liSubj = createToggle(monhocMap[item.subjKey] || item.subjKey);
+                liGV.querySelector("ul").appendChild(liSubj);
+
+                const liLesson = document.createElement("li");
+                liLesson.textContent = item.lesson.name;
+                liLesson.style.cursor = "pointer";
+                liLesson.addEventListener("click", e=>{
+                    e.stopPropagation();
+                    const preview = {
+                        name: item.lesson.name,
+                        meta: `GV: ${giaovienMap[gvID] || gvID} | Môn: ${monhocMap[item.subjKey] || item.subjKey} | Ngày: ${item.lesson.date}`,
+                        content: item.lesson.content
+                    };
+                    localStorage.setItem("lesson_preview", JSON.stringify(preview));
+                    previewFrame.src = "preview.html";
+                    previewFrame.style.display = "block";
+                    bgSlider.style.display = "none";
+                });
+                liSubj.querySelector("ul").appendChild(liLesson);
+            });
+        }
+    }
+});
+
+// ====== LOAD BÀI TẬP ======
+onValue(ref(db,"baitap"), snap=>{
+    const data = snap.val() || {};
+    homeworkTree.innerHTML = "";
+
+    for(const subjKey in data){
+        const liSubj = createToggle(monhocMap[subjKey] || subjKey);
+        homeworkTree.appendChild(liSubj);
+
+        const lessons = data[subjKey];
+        for(const k in lessons){
+            const t = lessons[k];
+
+            const liLesson = createToggle(t.lesson);
+            liSubj.querySelector("ul").appendChild(liLesson);
+
+            const liTask = document.createElement("li");
+            liTask.textContent = t.title || t.name;
+            liTask.style.cursor = "pointer";
+            liTask.addEventListener("click", e=>{
+                e.stopPropagation();
+                const preview = {
+                    name: t.title || t.name,
+                    meta: `Môn: ${monhocMap[subjKey] || subjKey} | Bài học: ${t.lesson}`,
+                    content: t.content
+                };
+                localStorage.setItem("lesson_preview", JSON.stringify(preview));
+                previewFrame.src = "preview.html";
+                previewFrame.style.display = "block";
+                bgSlider.style.display = "none";
+            });
+            liLesson.querySelector("ul").appendChild(liTask);
+        }
+    }
+});
+
+// ====== NÚT CHUYỂN TRANG CÓ PASS ======
+async function checkPassAndRedirect(url) {
+    const pass = prompt("Nhập mật khẩu để truy cập:");
+    if (!pass) return;
+
+    try {
+        const snap = await get(ref(db, "/config/pass"));
+        if (!snap.exists()) {
+            alert("Không tìm thấy mật khẩu cấu hình!");
+            return;
+        }
+
+        const PASS_HASH = snap.val(); 
+        // Hash SHA256 với CryptoJS (đã load <script> trong HTML)
+        const hash = CryptoJS.SHA256(pass).toString(CryptoJS.enc.Hex);
+
+        if (hash === PASS_HASH) {
+            window.location.href = url;
+        } else {
+            alert("Mật khẩu sai! Không thể truy cập.");
+        }
+    } catch (err) {
+        console.error("Lỗi kiểm tra pass:", err);
+        alert("Lỗi kết nối Firebase, thử lại sau!");
+    }
+}
+
+// Gán sự kiện cho 2 nút
+document.getElementById("gogiaoanBtn").addEventListener("click", ()=> checkPassAndRedirect("giaoan.html"));
+document.getElementById("goadminBtn").addEventListener("click", ()=> checkPassAndRedirect("danhmuc.html"));
+
+// ====== GOOGLE MEET (GLOBAL) ======
+const gmeetLink = document.getElementById("gmeetLink");
+
+if (gmeetLink) {
+    // Load link từ Firebase
+    onValue(ref(db, "config/gmeet"), snap => {
+        const url = snap.val();
+
+        if (url && url.startsWith("https://")) {
+            gmeetLink.href = url;
+            gmeetLink.textContent = "Google Meet";
+            gmeetLink.style.opacity = "1";
+            gmeetLink.style.pointerEvents = "auto";
+        } else {
+            gmeetLink.textContent = "Google Meet (chưa bật)";
+            gmeetLink.removeAttribute("href");
+            gmeetLink.style.opacity = "0.4";
+            gmeetLink.style.pointerEvents = "none";
+        }
+    });
+
+    // 🔐 Bắt nhập pass khi click Google Meet
+    gmeetLink.addEventListener("click", e => {
+        e.preventDefault();
+        if (!gmeetLink.href) return;
+        checkPassAndRedirect(gmeetLink.href);
+    });
+}
+
+// ====== UPDATE GOOGLE MEET (CÓ PASS) ======
+const updateGmeetBtn = document.getElementById("updateGmeetBtn");
+
+if (updateGmeetBtn) {
+    updateGmeetBtn.addEventListener("click", async () => {
+        // 1. HỎI PASS TRƯỚC
+        const pass = prompt("Chỉ giáo viên mới được cập nhật.\nNhập mật khẩu:");
+        if (!pass) return;
+
+        try {
+            const snap = await get(ref(db, "config/pass"));
+            if (!snap.exists()) {
+                alert("Chưa cấu hình mật khẩu!");
+                return;
+            }
+
+            const PASS_HASH = snap.val();
+            const hash = CryptoJS.SHA256(pass).toString(CryptoJS.enc.Hex);
+
+            // 2. SAI PASS → DỪNG NGAY
+            if (hash !== PASS_HASH) {
+                alert("❌ Sai mật khẩu! Không có quyền cập nhật.");
+                return;
+            }
+
+            // 3. ĐÚNG PASS → MỚI CHO NHẬP LINK
+            const newLink = prompt("Dán link Google Meet mới:");
+            if (!newLink) return;
+
+            if (!newLink.startsWith("https://")) {
+                alert("Link Google Meet không hợp lệ!");
+                return;
+            }
+
+            // 4. LƯU VÀO FIREBASE
+            await set(ref(db, "config/gmeet"), newLink);
+            alert("✅ Đã cập nhật Google Meet thành công!");
+
+        } catch (err) {
+            console.error("Update gmeet error:", err);
+            alert("Lỗi khi cập nhật Google Meet!");
+        }
+    });
+}
+
+// ====== BG SLIDER AUTO (10s) ======
+const slides = document.querySelectorAll(".bg-slide");
+let currentSlide = 0;
+
+function changeBackground() {
+    if (!slides.length) return;
+
+    slides[currentSlide].classList.remove("active");
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add("active");
+}
+
+// bật slide đầu
+if (slides.length) {
+    slides[0].classList.add("active");
+    setInterval(changeBackground, 10000); // 10 giây
+}
