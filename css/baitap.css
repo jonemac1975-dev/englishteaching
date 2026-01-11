@@ -40,19 +40,19 @@ label {
   margin-bottom: 6px;
 }
 
-input,
-select,
-textarea {
-  padding: 8px 10px;
-  border-radius: 6px;
+#btContent {
+  min-height: 300px;
   border: 1px solid #ccc;
-  font-size: 15px;
+  padding: 8px;
+  font-family: "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow: auto;
+  white-space: pre-wrap;
 }
-
-textarea {
-  min-height: 180px;
-  resize: vertical;
-}
+#btContent table { border-collapse: collapse; width: 100%; }
+#btContent th, #btContent td { border: 1px solid #999; padding: 4px; text-align: left; }
+#btContent img, #btContent iframe, #btContent video { max-width: 70%; display: block; margin: 8px auto; }
 
 /* ===== TOOLBAR ===== */
 .editor-toolbar {

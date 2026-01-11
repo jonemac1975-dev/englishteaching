@@ -1,235 +1,287 @@
-/* ===== RESET ===== */
-* { margin:0; padding:0; box-sizing:border-box; }
-
-html, body { 
-    height: 100%; 
-    font-family: Arial, sans-serif; 
-    background: #f5f5f5; 
-    color: #333; 
-    transition: background 0.3s, color 0.3s; 
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* ===== HEADER ===== */
-.teaching-header {
-    display: flex;
-    flex-direction: row; /* logo trái, text phải */
-    align-items: flex-start;
-    gap: 15px;
-    padding: 10px 20px;
-    background-color: #004080;
-    color: #fff;
-}
-
-.header-logos {
-    display: flex;
-    flex-direction: column; /* logo trường trên, cô dưới */
-    gap: 8px;
-}
-
-/* Logo trường cũng dạng avatar nhỏ */
-.school-logo {
-    height: 40px;
-    width: 40px;           /* fix vuông để tròn hoàn hảo */
-    border-radius: 50%;    /* thành hình tròn */
-    border: 2px solid #fff;
-    object-fit: cover;     /* giữ tỉ lệ hình không bị méo */
-}
-
-
-.teacher-logos {
-    display: flex;
-    gap: 8px;
-}
-
-.teacher-logos .teaching-logo {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    object-fit: cover;     /* quan trọng */
-    flex-shrink: 0;        /* không bị co */
-}
-.header-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;      /* canh giữa ngang */
-    text-align: center;       /* canh giữa chữ */
-}
-.header-text h1 {
-    font-size: 1.8em;
-    margin-bottom: 5px;
+html, body {
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  background: #f5f5f5;
+  color: #333;
 }
 
 .header-text h3 {
-    color: yellow;
-    font-weight: bold;
-    animation: glow 2s infinite alternate;
+  color: yellow;
+  font-weight: bold;
+  animation: glow 2s infinite alternate;
 }
 
 @keyframes glow {
-    0% { text-shadow: 0 0 2px #fff; }
-    50% { text-shadow: 0 0 10px #fff, 0 0 20px #ff0; }
-    100% { text-shadow: 0 0 2px #fff; }
+  0%   { text-shadow: 0 0 2px #fff; }
+  50%  { text-shadow: 0 0 10px #fff, 0 0 20px #ff0; }
+  100% { text-shadow: 0 0 2px #fff; }
+}
+/* ================= ROOT LAYOUT ================= */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= HEADER ================= */
+.teaching-header {
+  flex-shrink: 0;
+  display: flex;
+  gap: 2px;
+  padding: 10px 20px;
+  background: #004080;
+  color: #fff;
+}
+
+.header-logos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.school-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+}
+
+.teacher-logos {
+  display: flex;
+  gap: 8px;
+}
+
+.teacher-logos img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+}
+
+.header-text {
+  flex: 1;
+  text-align: center;
 }
 
 .header-marquee {
-    background: #fff8dc;
-    color: #000;
-    padding: 5px;
-    margin-top:5px;
+  margin-top: 3mm;   /* đúng yêu cầu */
+  padding: 5px;
+ 
+  color: yellow
 }
 
-/* ===== MAIN 2 CỘT ===== */
+/* ================= TOP BAR ================= */
+.top-bar {
+  flex-shrink: 0;
+  height: 36px;
+  display: flex-end;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+}
+
+.top-bar button {
+  all: unset;
+  display: inline-flex;      /* 🔥 CHỐT */
+  align-items: center;
+  justify-content: center;
+
+  height: 28px;              /* 🔥 CHỐT */
+  padding: 0 14px;
+  font-size: 14px;
+  line-height: 1;
+
+  border: 1px solid #004080;
+  border-radius: 14px;
+  background: #fff;
+  color: #004080;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.top-bar button:hover,
+.top-bar button.active {
+  background: #004080;
+  color: #fff;
+}
+
+/* ================= MAIN ================= */
 main#screen {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    height: calc(100vh - 150px); /* trừ header + footer */
-    box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
 }
 
-/* CỘT TRÁI */
-.left-panel {
-    flex: 0 0 20%;
-    max-height: 100%;
-    overflow-y: auto;
-    background: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+/* ================= POPUP ================= */
+.popup-wrapper {
+  position: absolute;
+  top: calc(100% + 6px);   /* ngay dưới top-bar */
+  right: 26px;              /* canh nút bên phải */
+  z-index: 999;
+  pointer-events: auto;     /* bắt click được */
 }
 
-.left-panel h3 {
-    margin-bottom: 6px;
-    font-size: 1.1em;
-    color: #004080;
+
+/* ================= TREE ================= */
+.tree-list {
+  list-style: none;
+  padding-left: 15px;
 }
 
-.collapsible-list {
-    list-style: none;
-    margin-bottom: 20px;
+.tree-list li {
+  margin: 4px 0;
+  cursor: pointer;
 }
 
-.collapsible-list li {
-    padding: 6px 8px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: 0.25s;
+.tree-list span.toggle {
+  font-weight: bold;
+  user-select: none;
+  cursor: pointer;
 }
-
-.collapsible-list li:hover {
-    background-color: #f0f0f0;
-}
-
-/* CỘT PHẢI */
-.right-panel {
-    flex: 1;
-    position: relative;
-    height: 100%;
-    border-radius: 8px;
-    overflow: hidden;
+/* ================= CONTENT ================= */
+.content-area {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
 }
 
 /* BG SLIDER */
 .bg-slider {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top:0; left:0;
+  position: absolute;
+  inset: 0;
 }
 
 .bg-slide {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    transition: opacity 1.2s ease-in-out;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s;
 }
 
 .bg-slide.active {
-    opacity: 1;
+  opacity: 1;
 }
 
-/* IFRAME PREVIEW */
+/* iframe */
 #previewFrame {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
-/* LIST TREE */
-#lessonTree, #homeworkTree {
-    list-style: none;
-    padding-left: 10px;
-}
-
-#lessonTree li, #homeworkTree li { margin: 4px 0; }
-
-#lessonTree li span.toggle, #homeworkTree li span.toggle {
-    user-select: none;
-    font-weight: bold;
-}
-
-#lessonTree li ul, #homeworkTree li ul {
-    list-style: none;
-    padding-left: 18px;
-}
-
-/* ===== FOOTER ===== */
+/* ================= FOOTER ================= */
 footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 10px;
-    background: #333;
-    color: #fff;
-    flex-wrap: wrap;
-    gap:5px;
+  flex-shrink: 0;
+  height: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  background: #333;
+  color: #fff;
 }
 
 footer button {
-    background-color: #004080;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    margin:2px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.25s;
+  height: 28px;
+  padding: 4px 10px;
+  font-size: 13px;
+  line-height: 1;
+  background: #004080;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-footer button:hover { background-color: #0066cc; }
-
-footer a#gmeetLink {
-  color: #9fd3ff;
-  text-decoration: underline;
+footer button:hover {
+  background: #fff;
 }
 
-footer a#gmeetLink:hover {
-  color: #cfe8ff;
-  text-shadow: 0 0 4px rgba(159,211,255,0.6);
+/* ===== FIX HIỂN THỊ 2 NÚT ===== */
+.top-bar {
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+
+  display: flex-end !important;
+  padding-right: 16px; 
+
+  position: relative;
+  z-index: 50;   /* 🔥 đè tất cả */
+  background: transparent;
 }
 
+/* ===== POPUP GẮN CHUẨN NGAY DƯỚI NÚT ===== */
 
-footer .footer-right span { font-weight: bold; }
 
-/* LIGHT MODE */
-body.light { background:#fff; color:#000; }
-body.light header { color:#000; }
-body.light footer { background:#eee; color:#000; }
-body.light footer button { background-color: #0066cc; color:#fff; }
 
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-    .teaching-header { flex-direction: column; align-items: flex-start; }
-    .teacher-logos { flex-wrap: wrap; gap: 5px; }
-    .header-text { text-align: left; margin-top: 10px; }
-    main#screen { flex-direction: column; height: auto; padding: 8px; }
-    iframe, video { width: 100%; height: 230px; }
+/* popup trái – bài giảng */
+#lessonPopup {
+  right: 280px; /* nằm bên trái nút bài tập */
+}
+
+/* popup phải – bài tập */
+#homeworkPopup {
+  right: 0;
+}
+
+/* TRẠNG THÁI MỞ */
+
+/* popup chung */
+.popup-box {
+  position: absolute;
+  top: 100%;               /* luôn dưới nút */
+  width: 350px;            /* tuỳ chỉnh */
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: scaleY(0.8);
+  transform-origin: top right;  /* ⭐ mở về trái */
+  pointer-events: none;
+  transition: all 0.25s ease;
+  z-index: 10;
+}
+
+#lessonPopup { right: 0px; }
+
+#homeworkPopup { right: 0; }
+
+
+/* khi show */
+.popup-box.show {
+  opacity: 1;
+  transform: scaleY(1);
+  pointer-events: auto;
+}
+
+.tree-list ul {
+  display: none;  /* JS sẽ toggle block */
+  list-style: none;
+  padding-left: 14px;
+}
+
+.tree-list li {
+  margin: 4px 0;
+  cursor: pointer;
+}
+
+.tree-list li li {
+  color: #004080;
+  font-weight: normal;
 }
