@@ -252,6 +252,64 @@ window.addEventListener("DOMContentLoaded", () => {
     fileInput.value = "";
   };
 
+// ================= AUDIO GOOGLE DRIVE =================
+window.addAudio = function () {
+  const url = prompt("Dán link mp3 Google Drive:");
+  if (!url) return;
+
+  // bắt FILE_ID từ link Drive
+  const m = url.match(/\/d\/([^/]+)/);
+  if (!m) {
+    alert("Link Google Drive không hợp lệ");
+    return;
+  }
+
+  const fileId = m[1];
+
+  const iframe = `
+  <iframe
+    src="https://drive.google.com/file/d/${fileId}/preview"
+    style="width:33vw; max-width:400px; height:60px;"
+    allow="autoplay">
+  </iframe><br>
+`;
+
+
+  insertAtCursor(iframe);
+};
+
+// ================= MP4 GOOGLE DRIVE =================
+document.getElementById("btnMp4").onclick = () => {
+  const url = prompt("Dán link MP4 Google Drive:");
+  if (!url) return;
+
+  // bắt FILE_ID từ link Drive
+  let fileId = "";
+
+  const m1 = url.match(/\/d\/([^/]+)/);
+  if (m1) fileId = m1[1];
+
+  const m2 = url.match(/id=([^&]+)/);
+  if (!fileId && m2) fileId = m2[1];
+
+  if (!fileId) {
+    alert("Link Google Drive không hợp lệ");
+    return;
+  }
+
+  const iframe = `
+    <iframe
+      src="https://drive.google.com/file/d/${fileId}/preview"
+      style="width:33vw; max-width:400px; height:220px;"
+      allow="autoplay"
+    ></iframe><br>
+  `;
+
+  insertAtCursor(iframe);
+};
+
+
+
   /* ================= NAV ================= */
   goBaitapBtn?.addEventListener("click", () => location.href = "baitap.html");
 

@@ -88,74 +88,106 @@ onValue(ref(db,"baigiang"), snap => {
         }
 
         for(const gvID in gvMap){
-            const liGV = createToggle(giaovienMap[gvID] || gvID);
-            lessonTree.appendChild(liGV);
+    const liGV = createToggle(giaovienMap[gvID] || gvID);
+    lessonTree.appendChild(liGV);
 
-            gvMap[gvID].forEach(item => {
-                const liSubj = createToggle(monhocMap[item.subjKey] || item.subjKey);
-                liGV.querySelector("ul").appendChild(liSubj);
-
-                const liLesson = document.createElement("li");
-                liLesson.textContent = item.lesson.name;
-                liLesson.style.cursor = "pointer";
-                liLesson.addEventListener("click", e => {
-                    e.stopPropagation();
-                    lessonPopup.classList.remove("show");
-                    btnLesson.classList.remove("active");
-
-                    const preview = {
-                        name: item.lesson.name,
-                        meta: `GV: ${giaovienMap[gvID] || gvID} | Môn: ${monhocMap[item.subjKey] || item.subjKey} | Ngày: ${item.lesson.date}`,
-                        content: item.lesson.content
-                    };
-                    localStorage.setItem("lesson_preview", JSON.stringify(preview));
-                    previewFrame.src = "preview.html";
-                    previewFrame.style.display = "block";
-                    bgSlider.style.display = "none";
-                });
-                liSubj.querySelector("ul").appendChild(liLesson);
-            });
+    const subjectMap = {}; // lưu liSubj theo môn
+    gvMap[gvID].forEach(item => {
+        const mon = monhocMap[item.subjKey] || item.subjKey;
+        if(!subjectMap[mon]){
+            const liSubj = createToggle(mon);
+            liGV.querySelector("ul").appendChild(liSubj);
+            subjectMap[mon] = liSubj;
         }
+
+        const liLesson = document.createElement("li");
+        liLesson.textContent = item.lesson.name;
+        liLesson.style.cursor = "pointer";
+        liLesson.addEventListener("click", e => {
+            e.stopPropagation();
+            lessonPopup.classList.remove("show");
+            btnLesson.classList.remove("active");
+
+            const preview = {
+                name: item.lesson.name,
+                meta: `GV: ${giaovienMap[gvID] || gvID} | Môn: ${mon}`,
+                content: item.lesson.content
+            };
+            localStorage.setItem("lesson_preview", JSON.stringify(preview));
+            previewFrame.src = "preview.html";
+            previewFrame.style.display = "block";
+            bgSlider.style.display = "none";
+        });
+
+        subjectMap[mon].querySelector("ul").appendChild(liLesson);
+    });
+}
+
     }
 });
 
-// ====== LOAD BÀI TẬP ======
-onValue(ref(db,"baitap"), snap => {
+// ====== LOAD BÀI TẬP THEO MÔN ======
+onValue(ref(db, "baitap"), snap => {
     const data = snap.val() || {};
     homeworkTree.innerHTML = "";
 
-    for(const subjKey in data){
-        const liSubj = createToggle(monhocMap[subjKey] || subjKey);
+    for (const monhocId in data) {
+        const monData = data[monhocId];
+        if (!monData || typeof monData !== "object") continue;
+
+        const monName = monhocMap?.[monhocId] || "Môn chưa đặt tên";
+
+        // node môn
+        const liSubj = createToggle(monName);
         homeworkTree.appendChild(liSubj);
 
-        const lessons = data[subjKey];
-        for(const k in lessons){
-            const t = lessons[k];
-            const liLesson = createToggle(t.lesson);
-            liSubj.querySelector("ul").appendChild(liLesson);
+        // danh sách bài
+        const lessons = Object.values(monData)
+            .filter(v => v && typeof v === "object");
 
-            const liTask = document.createElement("li");
-            liTask.textContent = t.title || t.name;
-            liTask.style.cursor = "pointer";
-            liTask.addEventListener("click", e => {
-                e.stopPropagation();
-                homeworkPopup.classList.remove("show");
-                btnHomework.classList.remove("active");
+        lessons
+            .sort((a, b) => {
+                const tA = a.title || a.lesson || "";
+                const tB = b.title || b.lesson || "";
+                return tA.localeCompare(tB, undefined, {
+                    numeric: true,
+                    sensitivity: "base"
+                });
+            })
+            .forEach(t => {
+                const liTask = document.createElement("li");
+                liTask.textContent = t.title || t.lesson || "(Không tiêu đề)";
+                liTask.style.cursor = "pointer";
+                liTask.style.color = "blue";
 
-                const preview = {
-                    name: t.title || t.name,
-                    meta: `Môn: ${monhocMap[subjKey] || subjKey} | Bài học: ${t.lesson}`,
-                    content: t.content
+                liTask.onclick = e => {
+                    e.stopPropagation();
+
+                    homeworkPopup.classList.remove("show");
+                    btnHomework.classList.remove("active");
+
+                    const preview = {
+                        name: t.title || t.lesson || "(Không tiêu đề)",
+                        meta: `Môn: ${monName}`,
+                        content: t.content
+                    };
+
+                    localStorage.setItem(
+                        "lesson_preview",
+                        JSON.stringify(preview)
+                    );
+
+                    previewFrame.src = "preview.html";
+                    previewFrame.style.display = "block";
+                    bgSlider.style.display = "none";
                 };
-                localStorage.setItem("lesson_preview", JSON.stringify(preview));
-                previewFrame.src = "preview.html";
-                previewFrame.style.display = "block";
-                bgSlider.style.display = "none";
+
+                liSubj.querySelector("ul").appendChild(liTask);
             });
-            liLesson.querySelector("ul").appendChild(liTask);
-        }
     }
 });
+
+
 
 
 // ====== NÚT CHUYỂN TRANG CÓ PASS ======

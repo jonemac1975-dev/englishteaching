@@ -29,6 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const btnSave=document.getElementById("btnSave");
   const btnDel=document.getElementById("btnDeleteSubject");
   const btnChooseFile=document.getElementById("btnChooseFile");
+  const btnAudio = document.getElementById("btnAudio");
   const fileInput=document.getElementById("fileInput");
   const btnYoutube=document.getElementById("btnYoutube");
   const btnPreview=document.getElementById("btnPreview");
@@ -83,6 +84,57 @@ window.addEventListener("DOMContentLoaded", () => {
     };
     reader.readAsDataURL(file);
   };
+
+btnAudio.addEventListener("click", () => {
+  const url = prompt("Dán link mp3 Google Drive:");
+  if (!url) return;
+
+  const m = url.match(/\/d\/([^/]+)/);
+  if (!m) {
+    alert("Link Google Drive không hợp lệ");
+    return;
+  }
+
+  const fileId = m[1];
+
+  insertAtCursor(`
+    <iframe
+      src="https://drive.google.com/file/d/${fileId}/preview"
+      style="width:33vw; max-width:400px; height:60px;"
+      allow="autoplay">
+    </iframe><br>
+  `);
+});
+
+
+// ================= MP4 GOOGLE DRIVE (BAI TAP) =================
+document.getElementById("btnMp4").addEventListener("click", () => {
+  const url = prompt("Dán link MP4 Google Drive:");
+  if (!url) return;
+
+  // bắt FILE_ID từ link Drive
+  let fileId = "";
+  const m1 = url.match(/\/d\/([^/]+)/);
+  if (m1) fileId = m1[1];
+
+  const m2 = url.match(/id=([^&]+)/);
+  if (!fileId && m2) fileId = m2[1];
+
+  if (!fileId) {
+    alert("Link Google Drive không hợp lệ");
+    return;
+  }
+
+  insertAtCursor(`
+    <iframe
+      src="https://drive.google.com/file/d/${fileId}/preview"
+      style="width:33vw; max-width:400px; height:220px;"
+      allow="autoplay">
+    </iframe><br>
+  `);
+});
+
+
 
   btnYoutube.onclick=()=>{
     const url=prompt("Dán link YouTube:");
