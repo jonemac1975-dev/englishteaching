@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import { getDatabase, ref, push, set, get, remove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
 window.addEventListener("DOMContentLoaded", () => {
 
@@ -14,7 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
     appId: "1:196358725024:web:c82e9fc5f4e809cccc98c5"
   };
 
-  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
   /* ================= ELEMENT ================= */
@@ -26,14 +26,14 @@ window.addEventListener("DOMContentLoaded", () => {
   const lessonHours = document.getElementById("lessonHours");
   const lessonDate = document.getElementById("lessonDate");
   const lessonContent = document.getElementById("lessonContent");
-  const lessonGMeet = document.getElementById("lessonGMeet");
 
   const lessonList = document.getElementById("lessonList");
   const addLessonBtn = document.getElementById("addLesson");
   const saveLessonBtn = document.getElementById("saveLesson");
-  const goBaigiangBtn = document.getElementById("goBaigiang");
   const goBaitapBtn = document.getElementById("goBaitap");
 
+  const btnChooseFile = document.getElementById("btnChooseFile");
+  const fileInput = document.getElementById("fileInput");
 
   let currentGVKey = null;
   let selectedLessonKey = null;
@@ -42,13 +42,11 @@ window.addEventListener("DOMContentLoaded", () => {
   function notify(msg) {
     const n = document.createElement("div");
     n.innerText = msg;
-    n.style.position = "fixed";
-    n.style.top = "10px";
-    n.style.right = "10px";
-    n.style.background = "#0a0";
-    n.style.color = "#fff";
-    n.style.padding = "6px 12px";
-    n.style.borderRadius = "6px";
+    n.style.cssText = `
+      position:fixed;top:10px;right:10px;
+      background:#0a0;color:#fff;
+      padding:6px 12px;border-radius:6px;z-index:9999
+    `;
     document.body.appendChild(n);
     setTimeout(() => n.remove(), 2000);
   }
@@ -59,250 +57,211 @@ window.addEventListener("DOMContentLoaded", () => {
       lessonHours,
       lessonDate,
       lessonContent,
-      lessonGMeet,
       subjectSelect,
       addLessonBtn,
-      saveLessonBtn,
-      goBaigiangBtn
+      saveLessonBtn
     ].forEach(el => el && (el.disabled = !enable));
   }
 
+  /* ================= CONTENTEDITABLE ================= */
+  Object.defineProperty(lessonContent, "value", {
+    get() { return lessonContent.innerHTML; },
+    set(v) { lessonContent.innerHTML = v; }
+  });
+
+  function insertAtCursor(html) {
+    lessonContent.focus();
+    document.execCommand("insertHTML", false, html);
+  }
+
+  lessonContent.addEventListener("paste", e => {
+    e.preventDefault();
+    const cd = e.clipboardData || window.clipboardData;
+    let html = cd.getData("text/html") || cd.getData("text/plain");
+    if (!html) return;
+
+    html = html.replace(/class="?Mso.*?"/g, "");
+    html = html.replace(/style="[^"]*mso-[^"]*"/g, "");
+    html = html.replace(/<o:p>\s*<\/o:p>/g, "");
+
+    insertAtCursor(html);
+  });
+
   /* ================= LOAD SUBJECT ================= */
-  function loadSubjects() {
-    onValue(ref(db, "monhoc"), snap => {
-      const data = snap.val() || {};
-      subjectSelect.innerHTML = "";
-      for (const k in data) {
-        const opt = document.createElement("option");
-        opt.value = k;
-        opt.textContent = data[k].name;
-        subjectSelect.appendChild(opt);
-      }
-      renderLessons();
-    }, { onlyOnce: true });
+  async function loadSubjects() {
+    const snap = await get(ref(db, "monhoc"));
+    const data = snap.val() || {};
+    subjectSelect.innerHTML = "";
+    for (const k in data) {
+      const opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = data[k].name;
+      subjectSelect.appendChild(opt);
+    }
+    renderLessons();
   }
 
   /* ================= CHECK GV ================= */
-  gvIDInput.addEventListener("input", () => {
+  gvIDInput.addEventListener("input", async () => {
     const id = gvIDInput.value.trim();
     currentGVKey = null;
     gvNameDisplay.innerText = "";
     setFormEnabled(false);
     if (!id) return;
 
-    onValue(ref(db, "giaovien"), snap => {
-      const data = snap.val() || {};
-      for (const k in data) {
-        if (data[k].id === id) {
-          currentGVKey = k;
-          gvNameDisplay.innerText = data[k].name;
-          setFormEnabled(true);
-          loadSubjects();
-          return;
-        }
+    const snap = await get(ref(db, "giaovien"));
+    const data = snap.val() || {};
+
+    for (const k in data) {
+      if (data[k].id === id) {
+        currentGVKey = k;
+        gvNameDisplay.innerText = data[k].name;
+        setFormEnabled(true);
+        loadSubjects();
+        return;
       }
-      gvNameDisplay.innerText = "ID không tồn tại";
-    }, { onlyOnce: true });
+    }
+    gvNameDisplay.innerText = "ID không tồn tại";
   });
 
-  /* ================= RENDER LESSON ================= */
-  function renderLessons() {
+  /* ================= RENDER ================= */
+  async function renderLessons() {
     lessonList.innerHTML = "";
     if (!currentGVKey) return;
 
-    onValue(ref(db, "baigiang"), snap => {
-      const data = snap.val() || {};
+    const snap = await get(ref(db, "baigiang"));
+    const data = snap.val() || {};
 
-      for (const subjKey in data) {
-        const lessons = data[subjKey];
-        const gvLessons = {};
+    for (const subjKey in data) {
+      const lessons = data[subjKey];
+      const gvLessons = Object.entries(lessons)
+        .filter(([_, v]) => v.gvID === currentGVKey);
 
-        for (const k in lessons) {
-          if (lessons[k].gvID === currentGVKey) gvLessons[k] = lessons[k];
-        }
-        if (!Object.keys(gvLessons).length) continue;
+      if (!gvLessons.length) continue;
 
-        const div = document.createElement("div");
-        div.className = "lessonGroup";
+      const div = document.createElement("div");
+      const subjName =
+        subjectSelect.querySelector(`option[value="${subjKey}"]`)?.text || "Unknown";
 
-        const subjName =
-          subjectSelect.querySelector(`option[value="${subjKey}"]`)?.text || "Unknown";
+      div.innerHTML = `<h3>Môn học: ${subjName}</h3>`;
 
-        div.innerHTML = `
-          <h3>Môn học: ${subjName}
-            <button class="delSubjectBtn">Xóa môn</button>
-          </h3>
+      const table = document.createElement("table");
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>STT</th><th>Tên</th><th>Tiết</th>
+            <th>Ngày</th><th>Nội dung</th><th>Xóa</th>
+          </tr>
+        </thead><tbody></tbody>
+      `;
+
+      const tbody = table.querySelector("tbody");
+
+      gvLessons.forEach(([key, l], idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${l.name || ""}</td>
+          <td>${l.hours || ""}</td>
+          <td>${l.date || ""}</td>
+          <td>${l.content ? "✔ Có" : ""}</td>
+          <td><button>Xóa</button></td>
         `;
 
-        const table = document.createElement("table");
-        table.className = "lessonTable";
-        table.innerHTML = `
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>Tên bài</th>
-              <th>Số tiết</th>
-              <th>Ngày</th>
-              <th>Nội dung</th>
-              <th>GMeet</th>
-              <th>Xóa</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        `;
+        tr.onclick = () => {
+          selectedLessonKey = key;
+          subjectSelect.value = subjKey;
+          lessonName.value = l.name || "";
+          lessonHours.value = l.hours || "";
+          lessonDate.value = l.date || "";
+          lessonContent.value = l.content || "";
+        };
 
-        const tbody = table.querySelector("tbody");
-        let i = 1;
+        tr.querySelector("button").onclick = async e => {
+          e.stopPropagation();
+          if (!confirm("Xóa bài giảng này?")) return;
+          await remove(ref(db, `baigiang/${subjKey}/${key}`));
+          notify("Đã xóa bài giảng");
+          renderLessons();
+        };
 
-        for (const k in gvLessons) {
-          const l = gvLessons[k];
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${i++}</td>
-            <td>${l.name || ""}</td>
-            <td>${l.hours || ""}</td>
-            <td>${l.date || ""}</td>
-            <td>${l.content ? "✔ Có" : ""}</td>
-            <td>${l.gmeet || ""}</td>
-            <td><button class="delLessonBtn">Xóa</button></td>
-          `;
+        tbody.appendChild(tr);
+      });
 
-          tr.addEventListener("click", () => {
-            selectedLessonKey = k;
-            subjectSelect.value = subjKey;
-            lessonName.value = l.name || "";
-            lessonHours.value = l.hours || "";
-            lessonDate.value = l.date || "";
-            lessonContent.value = l.content || "";
-            lessonGMeet.value = l.gmeet || "";
-          });
-
-          tr.querySelector(".delLessonBtn").addEventListener("click", e => {
-            e.stopPropagation();
-            remove(ref(db, `baigiang/${subjKey}/${k}`));
-            notify("Đã xóa bài giảng");
-          });
-
-          tbody.appendChild(tr);
-        }
-
-        div.appendChild(table);
-        lessonList.appendChild(div);
-
-        div.querySelector(".delSubjectBtn").addEventListener("click", () => {
-          if (confirm("Xóa toàn bộ bài giảng môn này?")) {
-            for (const k in gvLessons) {
-              remove(ref(db, `baigiang/${subjKey}/${k}`));
-            }
-            notify("Đã xóa môn học");
-          }
-        });
-      }
-    });
+      div.appendChild(table);
+      lessonList.appendChild(div);
+    }
   }
 
   /* ================= ADD ================= */
-  addLessonBtn.addEventListener("click", () => {
+  addLessonBtn.onclick = async () => {
     if (!currentGVKey) return notify("Nhập ID giáo viên");
-    if (!lessonName.value.trim()) return notify("Nhập tên bài giảng");
+    if (!lessonName.value.trim()) return notify("Nhập tên bài");
 
-    const obj = {
+    await push(ref(db, `baigiang/${subjectSelect.value}`), {
       name: lessonName.value.trim(),
       hours: lessonHours.value,
       date: lessonDate.value,
       content: lessonContent.value.trim(),
-      gmeet: lessonGMeet.value.trim(),
       gvID: currentGVKey
-    };
+    });
 
-    push(ref(db, `baigiang/${subjectSelect.value}`), obj);
-    clearForm();
     notify("Đã thêm bài giảng");
-  });
+    clearForm();
+    renderLessons();
+  };
 
   /* ================= SAVE ================= */
-  saveLessonBtn.addEventListener("click", () => {
+  saveLessonBtn.onclick = async () => {
     if (!selectedLessonKey) return notify("Chọn bài cần lưu");
 
-    const obj = {
+    await set(ref(db, `baigiang/${subjectSelect.value}/${selectedLessonKey}`), {
       name: lessonName.value.trim(),
       hours: lessonHours.value,
       date: lessonDate.value,
       content: lessonContent.value.trim(),
-      gmeet: lessonGMeet.value.trim(),
       gvID: currentGVKey
-    };
+    });
 
-    set(ref(db, `baigiang/${subjectSelect.value}/${selectedLessonKey}`), obj);
-    clearForm();
     notify("Đã lưu bài giảng");
-  });
-
-
-function openPreview() {
-  if (!lessonContent.value.trim()) {
-    notify("Chưa có nội dung để preview");
-    return;
-  }
-
-  const data = {
-    name: lessonName.value,
-    meta: `Số tiết: ${lessonHours.value || ''} | Ngày: ${lessonDate.value || ''}`,
-    content: lessonContent.value
+    clearForm();
+    renderLessons();
   };
 
-  localStorage.setItem("lesson_preview", JSON.stringify(data));
-  window.open("preview.html", "_blank");
-}
+  /* ================= PREVIEW ================= */
+  window.openPreview = () => {
+    if (!lessonContent.value.trim()) return notify("Chưa có nội dung");
 
-window.openPreview = openPreview;
+    localStorage.setItem("lesson_preview", JSON.stringify({
+      name: lessonName.value,
+      meta: `Số tiết: ${lessonHours.value || ""} | Ngày: ${lessonDate.value || ""}`,
+      content: lessonContent.value
+    }));
 
-function insertImage() {
-  const file = document.getElementById("imgUpload").files[0];
-  if (!file) return notify("Chưa chọn ảnh");
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    const imgTag = `<img src="${reader.result}" style="max-width:100%">`;
-    lessonContent.value += "\\n" + imgTag;
+    window.open("preview.html", "_blank");
   };
-  reader.readAsDataURL(file);
-}
 
-window.insertImage = insertImage;
+  /* ================= IMAGE ================= */
+  btnChooseFile.onclick = () => fileInput.click();
+  fileInput.onchange = () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = e => insertAtCursor(`<img src="${e.target.result}" style="max-width:100%"><br>`);
+    r.readAsDataURL(file);
+    fileInput.value = "";
+  };
 
-
+  /* ================= NAV ================= */
+  goBaitapBtn?.addEventListener("click", () => location.href = "baitap.html");
 
   function clearForm() {
     lessonName.value = "";
     lessonHours.value = "";
     lessonDate.value = "";
     lessonContent.value = "";
-    lessonGMeet.value = "";
     selectedLessonKey = null;
   }
-
-const btnChooseFile = document.getElementById("btnChooseFile");
-const fileInput = document.getElementById("fileInput");
-
-btnChooseFile.onclick = () => fileInput.click();
-
-fileInput.onchange = () => {
-  const file = fileInput.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    // chèn ảnh vào textarea
-    insertAtCursor(`<img src="${e.target.result}" style="max-width:100%;"><br>`);
-    fileInput.value = "";
-  };
-  reader.readAsDataURL(file);
-};
-
-  /* ================= NAV ================= */
-  goBaigiangBtn.addEventListener("click", () => location.href = "baigiang.html");
-  goBaitapBtn.addEventListener("click", () => location.href = "baitap.html");
 
   setFormEnabled(false);
 });
