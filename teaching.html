@@ -33,19 +33,32 @@
 
 
 <!-- MAIN -->
-<main id="screen" class="dual">
+<main id="screen" class="single">
 
-  <!-- CỘT TRÁI 20% -->
-  <div class="left-panel">
-    <h3>Bài giảng</h3>
-    <ul id="lessonTree" class="tree-list"></ul>
+  <!-- ===== TOP BAR: 2 NÚT CHỌN ===== -->
+  <div class="top-bar" style="position: relative; display: flex; justify-content: flex-end; gap: 10px;">
+    <!-- Bài giảng -->
+    <div style="position: relative;">
+      <button id="btnLesson">📘 Bài giảng</button>
+      <div id="lessonPopup" class="popup-box">
+        <h3>Bài giảng</h3>
+        <ul id="lessonTree" class="tree-list"></ul>
+      </div>
+    </div>
 
-    <h3>Bài tập</h3>
-    <ul id="homeworkTree" class="tree-list"></ul>
+    <!-- Bài tập -->
+    <div style="position: relative;">
+      <button id="btnHomework">📝 Bài tập</button>
+      <div id="homeworkPopup" class="popup-box">
+        <h3>Bài tập</h3>
+        <ul id="homeworkTree" class="tree-list"></ul>
+      </div>
+    </div>
   </div>
 
-  <!-- CỘT PHẢI 80% -->
-  <div class="right-panel">
+  <!-- ===== NỘI DUNG ===== -->
+  <div class="content-area">
+    <!-- BG SLIDER -->
     <div id="bgSlider" class="bg-slider">
       <img src="assets/img/bg1.jpg" class="bg-slide active">
       <img src="assets/img/bg2.jpg" class="bg-slide">
@@ -53,10 +66,19 @@
       <img src="assets/img/bg4.jpg" class="bg-slide">
       <img src="assets/img/bg5.jpg" class="bg-slide">
     </div>
-    <iframe id="previewFrame" src="" style="display:none;" frameborder="0"></iframe>
+
+    <!-- IFRAME PREVIEW -->
+    <iframe
+      id="previewFrame"
+      src=""
+      style="display:none;"
+      frameborder="0">
+    </iframe>
   </div>
 
 </main>
+
+
 
 
 

@@ -1,20 +1,101 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cập nhật bài tập</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/baitap.css" />
+<meta charset="UTF-8">
+<title>Cập nhật bài tập</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {margin:0; font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto; background:#f3f4f6; color:#111;}
+  .container {max-width:1000px; margin:20px auto; padding:20px; background:#fff; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.08);}
+  
+h2 {text-align:center; margin-bottom:20px;}
+  .form-box {margin-bottom:30px;}
+  .row {margin-bottom:12px; display:flex; flex-wrap:wrap; align-items:center;}
+  .row label {width:140px; font-weight:600;}
+  .row input[type="text"], .row input[type="date"], .row select {flex:1; padding:6px 10px; font-size:16px; border:1px solid #ccc; border-radius:6px;}
+  .editor-toolbar {margin:10px 0; display:flex; flex-wrap:wrap; gap:8px;}
+  .editor-toolbar button {padding:6px 12px; border:none; border-radius:6px; cursor:pointer; background:#f97316; color:#fff; font-weight:600; transition:0.2s;}
+  .editor-toolbar button:hover {background:#ea580c;}
+
+#btContent{
+  width:100%;
+  min-height:260px;
+  max-height:520px;          /* 👈 giới hạn chiều cao */
+  overflow-y:auto;           /* 👈 scroll dọc */
+  overflow-x:hidden;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  padding:14px 16px;
+  font-family:"Times New Roman", serif;
+  font-size:16px;
+  line-height:1.6;
+  background:#fff;
+}
+
+/* scroll đẹp hơn */
+#btContent::-webkit-scrollbar{
+  width:10px;
+}
+#btContent::-webkit-scrollbar-thumb{
+  background:#c7c7c7;
+  border-radius:10px;
+}
+#btContent::-webkit-scrollbar-thumb:hover{
+  background:#a3a3a3;
+}
+
+  .bt-list {margin-top:20px;}
+  .bt-item {padding:12px; border:1px solid #ddd; border-radius:6px; margin-bottom:8px; cursor:pointer; background:#f9f9f9;}
+  .bt-item strong {font-size:16px;}
+  .bt-item button {float:right; background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer;}
+  .bt-item button:hover {background:#dc2626;}
+.row button{
+  min-width:120px;
+  padding:10px 16px;
+  font-size:16px;
+  font-weight:700;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+
+/* Thêm */
+#btnAdd{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#fff;
+}
+#btnAdd:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.15); }
+
+/* Lưu */
+#btnSave{
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+  color:#fff;
+}
+#btnSave:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.15); }
+
+/* Xóa môn */
+#btnDeleteSubject{
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  color:#fff;
+}
+#btnDeleteSubject:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.15); }
+
+/* Giáo án */
+#btnGiaoAn{
+  background:linear-gradient(135deg,#f97316,#ea580c);
+  color:#fff;
+}
+#btnGiaoAn:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,.15); }
+
+</style>
 </head>
 
 <body>
 <div class="container">
-
   <h2>📘 CẬP NHẬT BÀI TẬP</h2>
 
-  <!-- ===== FORM ===== -->
   <div class="form-box">
-
     <div class="row">
       <label>Ngày:</label>
       <input type="date" id="btDate">
@@ -22,9 +103,7 @@
 
     <div class="row">
       <label>Môn học:</label>
-      <select id="btSubject">
-        <option value="">-- chọn môn --</option>
-      </select>
+      <select id="btSubject"><option value="">-- chọn môn --</option></select>
     </div>
 
     <div class="row">
@@ -37,51 +116,33 @@
       <input type="text" id="btTitle" placeholder="VD: Exercise 1 – Listening">
     </div>
 
-    <!-- ===== TOOLBAR ===== -->
     <div class="editor-toolbar">
-<button type="button" id="btnChooseFile">📁 Choose file</button>
-<input type="file" id="fileInput" hidden>
-
-      <button type="button" id="btnAudio">🔊 Audio</button>
+      <button type="button" id="btnChooseFile">📁 Chọn file</button>
+      <input type="file" id="fileInput" hidden>
       <button type="button" id="btnYoutube">▶ Youtube</button>
       <button type="button" id="btnPreview">👁 Preview</button>
-
-      <!-- hidden input -->
-      <input type="file" id="imageInput" accept="image/*" hidden>
-      <input type="file" id="audioInput" accept="audio/*" hidden>
     </div>
 
-    <!-- ===== HTML CONTENT ===== -->
     <div class="row">
-      <label>Nội dung bài tập (HTML):</label>
-      <textarea id="btContent" placeholder="Nhập nội dung bài tập ở đây..."></textarea>
+      <label>Nội dung bài tập:</label>
+      <div id="btContent" contenteditable="true" placeholder="Nhập nội dung bài tập ở đây..."></div>
     </div>
 
-    <!-- ===== ACTION ===== -->
-    <div class="actions">
+    <div class="row">
       <button id="btnAdd">Thêm</button>
       <button id="btnSave">Lưu</button>
-      <button id="btnDeleteSubject" class="danger">Xóa môn</button>
-     <button id="btnGiaoAn">Giáo án</button>
+      <button id="btnDeleteSubject">Xóa môn</button>
+      <button id="btnGiaoAn">Giáo án</button>
     </div>
-
   </div>
 
-  <!-- ===== LIST ===== -->
-  
   <h3>Danh sách bài tập</h3>
-  <div id="btList"></div>
+  <div class="bt-list" id="btList"></div>
 </div>
 
-  </div>
-
-</div>
-<script>
-  // Khi nhấn nút Giáo án => về trang giaoan.html
-  document.getElementById("btnGiaoAn").addEventListener("click", () => {
-    window.location.href = "giaoan.html";
-  });
-</script>
 <script type="module" src="js/baitap.js"></script>
+<script>
+document.getElementById("btnGiaoAn").addEventListener("click",()=>window.location.href="giaoan.html");
+</script>
 </body>
 </html>

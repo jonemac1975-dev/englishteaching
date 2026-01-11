@@ -35,9 +35,9 @@
   <input type="date" id="lessonDate">
 </div>
 
-<div class="formRow">
+<div class="formRow editorRow">
   <label>Nội dung bài giảng</label>
-
+</div>
   <div class="editorToolbar">
   <!-- Nút upload từ PC -->
   <button type="button" id="btnChooseFile">📁 Choose File</button>
@@ -50,28 +50,27 @@
 
 
 
-  <textarea
-    id="lessonContent"
-    rows="10"
-    placeholder="Nhập nội dung bài giảng tại đây..."
-  ></textarea>
+  <div
+ id="lessonContent"
+  contenteditable="true"
+  style="border:1px solid #333; min-height:200px; padding:8px; overflow:auto;"
+  placeholder="Nhập nội dung bài giảng tại đây..."
+></div>
+
 
   <!-- PREVIEW -->
   <div id="lessonPreview" style="display:none; margin-top:10px;
        padding:10px; border:1px solid #ccc; background:#fafafa">
   </div>
-</div>
 
 
 
-<div class="formRow">
-  <label>Google Meet:</label>
-  <input type="text" id="lessonGMeet">
-</div>
+
 
 <div class="formActions">
-  <button id="addLesson">Thêm</button>
-  <button id="saveLesson">Lưu</button>
+  <button id="addLesson" type="button">Thêm</button>
+  <button id="saveLesson" type="button">Lưu</button>
+
  
   <button id="goBaitap">Bài Tập</button>
 </div>

@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Preview bài giảng</title>
-<button id="btnBack" class="backBtn">← Quay về</button>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -22,6 +21,7 @@
     padding: 28px 32px;
     border-radius: 10px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    overflow-x: auto; /* scroll khi table quá rộng */
   }
 
   .lesson-title {
@@ -40,111 +40,76 @@
 
   .lesson-content {
     font-size: 16px;
-    line-height: 1.7;
+    line-height: 1.5; /* hợp lý, không quá thưa */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
-  /* ===== KHÔNG PHÁ STYLE GIÁO VIÊN ===== */
-  .lesson-content * {
-    max-width: 100%;
+  /* =========== Table chuẩn =========== */
+  .lesson-content table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 12px 0 !important;
+  }
+  .lesson-content th,
+  .lesson-content td {
+    border: 1px solid #999 !important;
+    padding: 6px 8px !important;
+    text-align: left !important;
+    vertical-align: top !important;
   }
 
-  /* ===== ẢNH ===== */
-  .lesson-content img {
-  display: block !important;
-  margin: 18px auto !important;
-  max-width: 66% !important;
-  width: auto !important;
-  height: auto !important;
-  border-radius: 6px;
-}
-
-
-  /* ===== VIDEO / YOUTUBE ===== */
+  /* ===== Ảnh & Video responsive ===== */
+  .lesson-content img,
   .lesson-content iframe,
   .lesson-content video {
     display: block;
-    margin: 20px auto;
-    width: 66%;
-    aspect-ratio: 16 / 9;
-    border-radius: 8px;
+    margin: 12px auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+
+  /* ===== giữ style Word gốc ===== */
+  .lesson-content * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ===== tiêu đề markdown ## / == == ===== */
+  .h1 { font-size: 22px; font-weight: bold; color: #0f172a; margin: 14px 0 6px; }
+  .h2 { font-size: 20px; font-weight: bold; color: #2563eb; margin: 12px 0 4px; }
+
+  /* ===== text kiểu Word ===== */
+  .word-text {
+    white-space: pre-wrap;
+    font-family: "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ===== Back button ===== */
+  .backBtn {
+    background-color: #f97316;
+    color: #fff;
     border: none;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 20px;
+    transition: background 0.3s, transform 0.2s;
   }
-
-  /* ===== MOBILE ===== */
-  @media (max-width: 768px) {
-    .preview-wrapper {
-      padding: 18px;
-    }
-
-    .lesson-content img,
-    .lesson-content iframe,
-    .lesson-content video {
-      width: 100%;
-      max-width: 100%;
-    }
-  }
-@media (max-width: 768px) {
-  .lesson-content img {
-    max-width: 100% !important;
-  }
-}
-
-#lessonContent {
-  white-space: pre-wrap;     /* GIỮ XUỐNG DÒNG + KHOẢNG TRẮNG */
-  font-family: "Times New Roman", serif;
-  font-size: 16px;
-  line-height: 1.6;
-  max-width: 900px;
-  margin: 30px auto;
-}
-.word-text {
-  white-space: pre-wrap;
-  font-family: "Times New Roman", serif;
-  font-size: 22px;
-  line-height: 1.7;
-  margin: 0;
-}
-
-.h1 {
-  font-size: 22px;
-  font-weight: bold;
-  color: #0f172a;
-  margin: 18px 0 10px;
-}
-
-.h2 {
-  font-size: 20px;
-  font-weight: bold;
-  color: #2563eb;
-  margin: 16px 0 8px;
-}
-
-.backBtn {
-  background-color: #f97316;   /* Cam nổi bật */
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.backBtn:hover {
-  background-color: #ea580c;
-  transform: scale(1.05);
-}
-
-.backBtn:active {
-  transform: scale(0.98);
-}
-
+  .backBtn:hover { background-color: #ea580c; transform: scale(1.05); }
+  .backBtn:active { transform: scale(0.98); }
 </style>
 </head>
 
 <body>
+
+<button id="btnBack" class="backBtn">← Quay về</button>
 
 <div class="preview-wrapper">
   <div class="lesson-title" id="pTitle"></div>
@@ -153,33 +118,35 @@
 </div>
 
 <script>
+  // Lấy dữ liệu từ localStorage
   const data = JSON.parse(localStorage.getItem("lesson_preview") || "{}");
   const contentEl = document.getElementById("pContent");
 
   document.getElementById("pTitle").innerText = data.name || "Bài giảng";
   document.getElementById("pMeta").innerText = data.meta || "";
 
-  function renderContent(text){
-    if(!text) return "<i>Không có nội dung</i>";
+  function renderContent(html) {
+    if(!html) return "<i>Không có nội dung</i>";
 
-    // tiêu đề ##
-    text = text.replace(/^## (.+)$/gm, `<div class="h1">$1</div>`);
+    // Remove thẻ rác Word
+    html = html.replace(/class="?Mso[a-zA-Z0-9]*"?/g, "");
+  html = html.replace(/style="[^"]*mso-[^"]*"/g, "");
+  html = html.replace(/<o:p>\s*<\/o:p>/g, "");
+  html = html.replace(/<span style="[^"]*"><\/span>/g, "");
+  html = html.replace(/<!--\[if[^>]*>.*?<!\[endif\]-->/g, "");
 
-    // tiêu đề == ==
-    text = text.replace(/^==\s*(.+?)\s*==$/gm, `<div class="h2">$1</div>`);
-
-    return `<pre class="word-text">${text}</pre>`;
+    return html;
   }
 
+  // Gán trực tiếp HTML, giữ nguyên khung, font, màu
   contentEl.innerHTML = renderContent(data.content);
 </script>
+
 <script>
   document.getElementById("btnBack").addEventListener("click", () => {
     window.location.href = "teaching.html";
   });
 </script>
-
-
 
 </body>
 </html>
