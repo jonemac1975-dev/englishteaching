@@ -2,15 +2,15 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<a href="teaching.html" class="back">&lt;- Về trang dạy</a>
 <title>Cập nhật giáo án</title>
 <link rel="stylesheet" href="css/giaoan.css">
 </head>
 <body>
-
+<a href="teaching.html" class="back">&lt;- Về trang dạy</a>
 <h1>CẬP NHẬT GIÁO ÁN</h1>
 
 <div class="formRow">
+
   <label>ID giáo viên:</label>
   <input type="text" id="gvIDInput" placeholder="Nhập ID giáo viên">
   <span id="gvNameDisplay"></span>
@@ -43,7 +43,7 @@
   <!-- Nút upload từ PC -->
   <button type="button" id="btnChooseFile">📁 Choose File</button>
   <input type="file" id="fileInput" accept="image/*" hidden>
-
+  <button type="button" onclick="addpdf()">pdf</button>
   <button type="button" onclick="addAudio()">🔊 Audio</button>
   <button type="button" id="btnMp4">🎬 MP4 (GG)</button>
   <button type="button" onclick="addYT()">🎬 YouTube</button>
@@ -146,4 +146,3 @@ function addYT() {
 <script type="module" src="js/giaoan.js"></script>
 </body>
 </html>
-
