@@ -252,6 +252,30 @@ window.addEventListener("DOMContentLoaded", () => {
     fileInput.value = "";
   };
 
+window.addpdf = function () {
+  const url = prompt("Dán link PDF Google Drive:");
+  if (!url) return;
+
+  // bắt FILE_ID từ link Drive
+  const m = url.match(/\/d\/([^/]+)/);
+  if (!m) {
+    alert("Link Google Drive không hợp lệ");
+    return;
+  }
+
+  const fileId = m[1];
+
+  const iframe = `
+  <iframe
+    src="https://drive.google.com/file/d/${fileId}/preview"
+    style="width:100%; height:600px; border:none;"
+    allow="autoplay">
+  </iframe><br>
+  `;
+
+  insertAtCursor(iframe);
+};
+
 // ================= AUDIO GOOGLE DRIVE =================
 window.addAudio = function () {
   const url = prompt("Dán link mp3 Google Drive:");
