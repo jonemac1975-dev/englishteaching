@@ -6,22 +6,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+  /* ===== NỀN NGOÀI (BÀN ĐỌC SÁCH) ===== */
   body {
     margin: 0;
     padding: 0;
-    background: #f3f4f6;
+    background: #e5e7eb;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
     color: #111;
   }
 
+  /* ===== TRANG SÁCH ===== */
   .preview-wrapper {
-    max-width: 1000px;
-    margin: 20px auto;
+    max-width: 1100px;
+    margin: 30px auto;
     background: #fff;
-    padding: 28px 32px;
-    border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    overflow-x: auto; /* scroll khi table quá rộng */
+    padding: 40px 48px;
+    border-radius: 6px;
+    box-shadow:
+      0 10px 25px rgba(0,0,0,0.12),
+      0 0 0 1px rgba(0,0,0,0.05);
+    overflow-x: auto;
   }
 
   .lesson-title {
@@ -40,81 +44,79 @@
 
   .lesson-content {
     font-size: 16px;
-    line-height: 1.5; /* hợp lý, không quá thưa */
+    line-height: 1.6;
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
 
-  /* =========== Table chuẩn =========== */
+  /* ===== TABLE ===== */
   .lesson-content table {
     width: 100% !important;
     border-collapse: collapse !important;
-    margin: 12px 0 !important;
+    margin: 14px 0 !important;
   }
   .lesson-content th,
   .lesson-content td {
     border: 1px solid #999 !important;
-    padding: 6px 8px !important;
+    padding: 8px 10px !important;
     text-align: left !important;
     vertical-align: top !important;
   }
 
-  /* ===== Ảnh & Video responsive ===== */
+  /* ===== ẢNH / VIDEO / PDF ===== */
   .lesson-content img,
   .lesson-content iframe,
   .lesson-content video {
     display: block;
-    margin: 12px auto;
+    margin: 16px auto;
     max-width: 100%;
-    height: auto;
     border-radius: 6px;
   }
 
-  /* ===== giữ style Word gốc ===== */
+  /* PDF iframe */
+  .lesson-content iframe {
+    width: 100% !important;
+    min-height: 600px;
+  }
+
+  /* ===== GIỮ STYLE WORD ===== */
   .lesson-content * {
     max-width: 100%;
     box-sizing: border-box;
   }
 
-  /* ===== tiêu đề markdown ## / == == ===== */
-  .h1 { font-size: 22px; font-weight: bold; color: #0f172a; margin: 14px 0 6px; }
-  .h2 { font-size: 20px; font-weight: bold; color: #2563eb; margin: 12px 0 4px; }
-
-  /* ===== text kiểu Word ===== */
+  /* ===== TEXT WORD ===== */
   .word-text {
     white-space: pre-wrap;
     font-family: "Times New Roman", serif;
     font-size: 16px;
-    line-height: 1.5;
+    line-height: 1.6;
     margin: 0;
   }
 
-  /* ===== Back button ===== */
-  .backBtn {
-    background-color: #f97316;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    font-size: 16px;
+  /* ===== BACK BUTTON ===== */
+  .back-home {
+    display: inline-block;
+    margin: 10px 0;
+    text-decoration: none;
     font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    margin: 20px;
-    transition: background 0.3s, transform 0.2s;
+    color: #2563eb;
   }
-  .backBtn:hover { background-color: #ea580c; transform: scale(1.05); }
-  .backBtn:active { transform: scale(0.98); }
 </style>
+
 </head>
 
 <body>
 
+
+
 <div class="preview-wrapper">
-  <a class="back-home" href="../index.html">&larr; Back</a>
+<a class="back-home" href="../index.html">&larr; Back</a>
   <div class="lesson-title" id="pTitle"></div>
   <div class="lesson-meta" id="pMeta"></div>
   <div class="lesson-content" id="pContent"></div>
-  <a class="back-home" href="../index.html">&larr; Back</a>
+<a class="back-home" href="../index.html">&larr; Back</a>
+   
 </div>
 
 <script>
@@ -127,7 +129,7 @@
 
   function renderContent(html) {
     if(!html) return "<i>Không có nội dung</i>";
-
+   
     // Remove thẻ rác Word
     html = html.replace(/class="?Mso[a-zA-Z0-9]*"?/g, "");
   html = html.replace(/style="[^"]*mso-[^"]*"/g, "");
@@ -140,14 +142,10 @@
 
   // Gán trực tiếp HTML, giữ nguyên khung, font, màu
   contentEl.innerHTML = renderContent(data.content);
+
 </script>
 
-<script>
-  document.getElementById("btnBack").addEventListener("click", () => {
-    window.location.href = "teaching.html";
-  });
-</script>
+
 
 </body>
 </html>
-
