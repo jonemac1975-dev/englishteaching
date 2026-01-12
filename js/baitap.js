@@ -29,6 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const btnSave=document.getElementById("btnSave");
   const btnDel=document.getElementById("btnDeleteSubject");
   const btnChooseFile=document.getElementById("btnChooseFile");
+const btnpdf = document.getElementById("btnpdf");
   const btnAudio = document.getElementById("btnAudio");
   const fileInput=document.getElementById("fileInput");
   const btnYoutube=document.getElementById("btnYoutube");
@@ -103,6 +104,53 @@ btnAudio.addEventListener("click", () => {
       style="width:33vw; max-width:400px; height:60px;"
       allow="autoplay">
     </iframe><br>
+  `);
+});
+
+btnpdf.addEventListener("click", () => {
+  const url = prompt("Dán link PDF Google Drive:");
+  if (!url) return;
+
+  const m = url.match(/\/d\/([^/]+)/);
+  if (!m) {
+    alert("Link Google Drive không hợp lệ");
+    return;
+  }
+
+  const fileId = m[1];
+  const preview = `https://drive.google.com/file/d/${fileId}/preview`;
+  const open = `https://drive.google.com/file/d/${fileId}/view`;
+
+  insertAtCursor(`
+    <div style="
+      margin:16px 0;
+      padding:12px;
+      border:1px solid #ddd;
+      border-radius:8px;
+      background:#fafafa;
+    ">
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:8px;
+        font-weight:600;
+      ">
+        <span>📄 Tài liệu PDF</span>
+        <a href="${open}" target="_blank" style="
+          font-size:13px;
+          text-decoration:none;
+          color:#1976d2;
+        ">Mở toàn màn hình</a>
+      </div>
+
+      <iframe
+        src="${preview}"
+        style="width:100%; height:600px; border:none; border-radius:6px;"
+        loading="lazy">
+      </iframe>
+    </div>
+    <br>
   `);
 });
 
