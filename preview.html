@@ -75,9 +75,23 @@
 
   /* PDF iframe */
   .lesson-content iframe {
-    width: 100% !important;
-    min-height: 600px;
-  }
+  display: block;
+  margin: 16px auto;
+  max-width: 100%;
+  border-radius: 6px;
+  border: none;
+}
+.lesson-content iframe[src*="audio"],
+.lesson-content iframe[style*="height:60px"] {
+  height: 60px !important;
+  max-width: 420px;
+}
+
+.lesson-content iframe[src*="/preview"] {
+  width: 100% !important;
+  height: 75vh;        /* 👈 thấp hơn, đọc vừa mắt */
+  max-height: 900px;   /* 👈 không cho quá cao */
+}
 
   /* ===== GIỮ STYLE WORD ===== */
   .lesson-content * {
