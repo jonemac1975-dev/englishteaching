@@ -15,6 +15,27 @@ const btnHomework = document.getElementById("btnHomework");
 const lessonPopup = document.getElementById("lessonPopup");
 const homeworkPopup = document.getElementById("homeworkPopup");
 
+const playClipBtn = document.getElementById("playClipBtn");
+const updateClipBtn = document.getElementById("updateClipBtn");
+const minClipBtn = document.getElementById("minClipBtn");
+const clipBox = document.getElementById("clipBox");
+const clipFrame = document.getElementById("clipFrame");
+
+let currentClipURL = "";
+
+const musicPlayBtn = document.getElementById("musicPlayBtn");
+const updateMusicBtn = document.getElementById("updateMusicBtn");
+const musicMinBtn = document.getElementById("musicMinBtn");
+const musicBox = document.getElementById("musicBox");
+const driveMusic = document.getElementById("driveMusic");
+
+let currentDriveID = null;
+let isMusicPlaying = false;
+
+
+
+
+
 // toggle popup
 function togglePopup(popup, btn) {
   [lessonPopup, homeworkPopup].forEach(p => { if(p!==popup) p.classList.remove("show"); });
@@ -56,10 +77,40 @@ function createToggle(text) {
   return li;
 }
 
+function minVideoWindow() {
+  if (!videoWin || videoWin.closed) {
+    alert("Chưa có clip nào đang mở");
+    return;
+  }
+
+  const w = 360;
+  const h = 300;
+  const x = screen.availWidth - w - 20;
+  const y = screen.availHeight - h - 60;
+
+  videoWin.resizeTo(w, h);
+  videoWin.moveTo(x, y);
+  videoWin.focus();
+}
+
+function openSocialVideo(link) {
+  if (!/facebook\.com|fb\.watch|tiktok\.com/.test(link)) {
+    alert("Chỉ hỗ trợ Facebook hoặc TikTok");
+    return;
+  }
+
+  videoWin = window.open(
+    link,
+    "socialVideo",
+    "width=420,height=760,resizable=yes"
+  );
+}
 
 // ====== LOAD DATA ======
 let monhocMap = {};
 let giaovienMap = {};
+let videoWin = null;
+
 
 // Load môn học
 onValue(ref(db,"monhoc"), snap => {
@@ -187,8 +238,71 @@ onValue(ref(db, "baitap"), snap => {
     }
 });
 
+//const playClipBtn = document.getElementById("playClipBtn");
+//const updateClipBtn = document.getElementById("updateClipBtn");
+//const minClipBtn = document.getElementById("minClipBtn");
+//const clipBox = document.getElementById("clipBox");
+//const clipFrame = document.getElementById("clipFrame");
 
+//let currentClipURL = "";
 
+// lấy link từ Firebase
+onValue(ref(db, "config/music"), snap => {
+  currentDriveID = snap.val() || null;
+});
+
+// PLAY / STOP
+musicPlayBtn.onclick = () => {
+  if (!currentDriveID) {
+    alert("Chưa có nhạc nền!");
+    return;
+  }
+
+  if (!isMusicPlaying) {
+    driveMusic.src =
+      `https://drive.google.com/file/d/${currentDriveID}/preview?autoplay=1`;
+
+    musicBox.classList.remove("hidden");
+    musicPlayBtn.textContent = "⏸️";
+  } else {
+    driveMusic.src = "";
+    musicBox.classList.add("hidden");
+    musicPlayBtn.textContent = "🎵";
+  }
+
+  isMusicPlaying = !isMusicPlaying;
+};
+
+// MIN / MAX
+musicMinBtn.onclick = () => {
+  musicBox.classList.toggle("min");
+};
+
+// UPDATE LINK (có pass)
+updateMusicBtn.onclick = async () => {
+  const pass = prompt("Chỉ giáo viên mới được cập nhật\nNhập mật khẩu:");
+  if (!pass) return;
+
+  const snap = await get(ref(db, "config/pass"));
+  const hash = CryptoJS.SHA256(pass).toString(CryptoJS.enc.Hex);
+
+  if (hash !== snap.val()) {
+    alert("❌ Sai mật khẩu!");
+    return;
+  }
+
+  const link = prompt("Dán link VIDEO GOOGLE DRIVE:");
+  if (!link) return;
+
+  const m = link.match(/\/d\/([^/]+)/);
+  if (!m) {
+    alert("Link Drive không hợp lệ!");
+    return;
+  }
+
+  await set(ref(db, "config/music"), m[1]);
+  alert("✅ Đã cập nhật nhạc nền!");
+};
 
 // ====== NÚT CHUYỂN TRANG CÓ PASS ======
 async function checkPassAndRedirect(url) {
