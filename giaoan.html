@@ -36,19 +36,17 @@
   <input type="date" id="lessonDate">
 </div>
 
-<div class="formRow editorRow">
-  <label>Nội dung bài giảng</label>
-</div>
-  <div class="editorToolbar">
-  <!-- Nút upload từ PC -->
+<div class="editorToolbar">
   <button type="button" id="btnChooseFile">📁 Choose File</button>
   <input type="file" id="fileInput" accept="image/*" hidden>
-  <button type="button" onclick="addpdf()">pdf</button>
-  <button type="button" onclick="addAudio()">🔊 Audio</button>
+
+    <button type="button" onclick="addAudio()">🔊 Audio</button>
   <button type="button" id="btnMp4">🎬 MP4 (GG)</button>
   <button type="button" onclick="addYT()">🎬 YouTube</button>
+  <button type="button" onclick="addPPT()">📊 Powepoint + PDF</button>
   <button type="button" onclick="openPreview()">👁 Preview</button>
 </div>
+
 
 
 
@@ -80,61 +78,152 @@
 <h2>Danh sách giáo án theo môn học</h2>
 <div id="lessonList"></div>
 <script>
-function insertAtCursor(text) {
-  const ta = document.getElementById("lessonContent");
-  const start = ta.selectionStart;
-  const end = ta.selectionEnd;
+/* ================================
+   INSERT HTML AT CURSOR (CONTENTEDITABLE)
+================================ */
+function insertAtCursor(html) {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
 
-  ta.value =
-    ta.value.substring(0, start) +
-    text +
-    ta.value.substring(end);
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
 
-  ta.selectionStart = ta.selectionEnd = start + text.length;
-  ta.focus();
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html;
+
+  const frag = document.createDocumentFragment();
+  let node, lastNode;
+  while ((node = wrapper.firstChild)) {
+    lastNode = frag.appendChild(node);
+  }
+
+  range.insertNode(frag);
+
+  if (lastNode) {
+    range.setStartAfter(lastNode);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  document.getElementById("lessonContent").focus();
 }
 
+/* ================================
+   ADD IMAGE
+================================ */
 function addImage() {
   const url = prompt("Dán link ảnh:");
   if (!url) return;
+
   insertAtCursor(`<img src="${url}" style="max-width:100%;"><br>`);
 }
 
+/* ================================
+   ADD AUDIO / YOUTUBE AUDIO
+================================ */
 function addAudio() {
   const url = prompt("Dán link MP3 hoặc YouTube:");
   if (!url) return;
 
   if (url.includes("youtube")) {
-    let id = url.includes("watch?v=")
+    const id = url.includes("watch?v=")
       ? url.split("watch?v=")[1].split("&")[0]
       : url.split("youtu.be/")[1];
 
-    insertAtCursor(
-      `<iframe height="80"
-        src="https://www.youtube.com/embed/${id}">
-      </iframe><br>`
-    );
+    insertAtCursor(`
+      <iframe
+        width="100%"
+        height="80"
+        src="https://www.youtube.com/embed/${id}"
+        allowfullscreen>
+      </iframe><br>
+    `);
   } else {
     insertAtCursor(`<audio controls src="${url}"></audio><br>`);
   }
 }
 
+/* ================================
+   ADD YOUTUBE VIDEO
+================================ */
 function addYT() {
   const url = prompt("Dán link YouTube:");
   if (!url) return;
 
-  let id = url.includes("watch?v=")
+  const id = url.includes("watch?v=")
     ? url.split("watch?v=")[1].split("&")[0]
     : url.split("youtu.be/")[1];
 
-  insertAtCursor(
-    `<iframe width="100%" height="315"
+  insertAtCursor(`
+    <iframe
+      width="100%"
+      height="315"
       src="https://www.youtube.com/embed/${id}"
       allowfullscreen>
-    </iframe><br>`
-  );
+    </iframe><br>
+  `);
 }
+/* ================================
+   ADD GOOGLE SLIDES / DRIVE (PPT, PDF)
+================================ */
+function addPPT() {
+  const editor = document.getElementById("lessonContent");
+  editor.focus();
+
+  const url = prompt("Dán link Google Slides hoặc Google Drive:");
+  if (!url) return;
+
+  let iframe = "";
+
+  // ===== GOOGLE SLIDES =====
+  if (url.includes("docs.google.com/presentation")) {
+    const m = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!m) {
+      alert("❌ Link Slides không hợp lệ");
+      return;
+    }
+    const id = m[1];
+
+    iframe = `
+      <iframe
+        src="https://docs.google.com/presentation/d/${id}/preview"
+        style="width:100%; height:600px; border:none;"
+        allowfullscreen>
+      </iframe><br>
+    `;
+  }
+
+  // ===== GOOGLE DRIVE FILE =====
+  else if (url.includes("drive.google.com/file")) {
+    const m = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!m) {
+      alert("❌ Link Drive không hợp lệ");
+      return;
+    }
+    const id = m[1];
+
+    // dùng Google Docs Viewer → không lỗi 500
+    const fileUrl = `https://drive.google.com/uc?id=${id}&export=download`;
+
+    iframe = `
+      <iframe
+        src="https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true"
+        style="width:100%; height:600px; border:none;">
+      </iframe><br>
+    `;
+  }
+
+  else {
+    alert("❌ Không phải link Google Slides hoặc Google Drive");
+    return;
+  }
+
+  insertAtCursor(iframe);
+}
+
 </script>
+
 
 <script>
   // Nút "Bài Tập" dẫn về trang baitap.html
