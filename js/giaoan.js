@@ -252,29 +252,7 @@ window.addEventListener("DOMContentLoaded", () => {
     fileInput.value = "";
   };
 
-window.addpdf = function () {
-  const url = prompt("Dán link PDF Google Drive:");
-  if (!url) return;
 
-  // bắt FILE_ID từ link Drive
-  const m = url.match(/\/d\/([^/]+)/);
-  if (!m) {
-    alert("Link Google Drive không hợp lệ");
-    return;
-  }
-
-  const fileId = m[1];
-
-  const iframe = `
-  <iframe
-    src="https://drive.google.com/file/d/${fileId}/preview"
-    style="width:100%; height:600px; border:none;"
-    allow="autoplay">
-  </iframe><br>
-  `;
-
-  insertAtCursor(iframe);
-};
 
 // ================= AUDIO GOOGLE DRIVE =================
 window.addAudio = function () {
@@ -298,6 +276,60 @@ window.addAudio = function () {
   </iframe><br>
 `;
 
+
+  insertAtCursor(iframe);
+};
+
+window.addPPT = function () {
+  const editor = document.getElementById("lessonContent");
+  editor.focus();
+
+  const url = prompt("Dán link Google Slides hoặc Google Drive:");
+  if (!url) return;
+
+  let iframe = "";
+
+  // ===== GOOGLE SLIDES =====
+  if (url.includes("docs.google.com/presentation")) {
+    const m = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!m) {
+      alert("❌ Link Google Slides không hợp lệ");
+      return;
+    }
+    const id = m[1];
+
+    iframe = `
+      <iframe
+        src="https://docs.google.com/presentation/d/${id}/preview"
+        style="width:100%; height:600px; border:none;"
+        allowfullscreen>
+      </iframe><br>
+    `;
+  }
+
+  // ===== GOOGLE DRIVE (PPT, PDF, DOCX…) =====
+  else if (url.includes("drive.google.com/file")) {
+    const m = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!m) {
+      alert("❌ Link Google Drive không hợp lệ");
+      return;
+    }
+    const id = m[1];
+
+    const fileUrl = `https://drive.google.com/uc?id=${id}&export=download`;
+
+    iframe = `
+      <iframe
+        src="https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true"
+        style="width:100%; height:600px; border:none;">
+      </iframe><br>
+    `;
+  }
+
+  else {
+    alert("❌ Không phải link Google Slides hoặc Google Drive");
+    return;
+  }
 
   insertAtCursor(iframe);
 };
