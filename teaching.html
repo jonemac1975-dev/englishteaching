@@ -85,21 +85,39 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-left">
-       <a id="gmeetLink" target="_blank">Google Meet</a>
+    <a id="gmeetLink" target="_blank">Google Meet</a>
   </div>
 
   <div class="footer-center">
     <button id="gogiaoanBtn">Lesson</button>
     <button id="goadminBtn">Admin</button>
- <button id="updateGmeetBtn">Update Meet</button>
-
-    
+    <button id="updateMusicBtn">🎼 Update Music</button>
   </div>
 
   <div class="footer-right">
+    <button id="musicPlayBtn" title="Phát / Tắt nhạc">🎵</button>
+    <button id="musicMinBtn" title="Thu nhỏ">▢</button>
     <span id="clock"></span>
-      </div>
+  </div>
 </footer>
+
+<!-- Video Drive nổi -->
+<div id="musicBox" class="music-box hidden">
+  <iframe
+    id="driveMusic"
+    allow="autoplay"
+    allowfullscreen>
+  </iframe>
+</div>
+
+
+<!-- player nổi -->
+<div id="clipBox" class="clip-box hidden">
+  <iframe id="clipFrame" allow="autoplay; fullscreen"></iframe>
+</div>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
 <script type="module" src="js/teaching.js"></script>
 
